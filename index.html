@@ -3,14 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <title>Zihao Huang | Homepage</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Tailwind config for dark mode support -->
   <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Dark mode logic -->
+  <script>
+    // Load theme on page load
     if (localStorage.getItem('theme') === 'dark' || 
         (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
+
+    // Toggle function for dark mode
     function toggleTheme() {
       const html = document.documentElement;
       if (html.classList.contains('dark')) {
@@ -25,6 +37,7 @@
 </head>
 <body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans max-w-3xl mx-auto p-6">
 
+  <!-- Navigation Bar -->
   <nav class="flex justify-between items-center mb-6">
     <h1 class="text-2xl font-bold">Zihao</h1>
     <ul class="flex space-x-4 text-blue-600 dark:text-blue-300">
@@ -34,21 +47,26 @@
       <li><a href="pages/life.html">Life</a></li>
       <li><a href="pages/blog.html">Blog</a></li>
     </ul>
-    <button onclick="toggleTheme()" class="ml-4 px-2 py-1 border rounded">🌓</button>
+    <button onclick="toggleTheme()" class="ml-4 px-2 py-1 border rounded text-sm">🌓</button>
   </nav>
 
+  <!-- Main Section -->
   <section class="text-center">
     <img src="assets/zihao.png" alt="Zihao" class="rounded-full w-40 mx-auto mb-4">
-    <h2 class="text-xl font-semibold">Hi, I'm Zihao 👋</h2>
+    <h2 class="text-xl font-semibold">Hi, I'm Zihao Huang 👋</h2>
     <p class="mt-2 text-left">
-My name is Zihao Huang, currently a Master of Computing (Artificial Intelligence) student at the National University of Singapore (NUS), under the supervision of <a href="https://www.comp.nus.edu.sg/disa/people/huangkw/" target="_blank" class="text-blue-600 dark:text-blue-300 hover:underline">Prof. Ke-Wei Huang</a>. My research focuses on Natural Language Processing (NLP), and I'm especially interested in large language models and their applications in finance.
-
-I'm also affiliated with the <a href="https://sentic.net/" target="_blank" class="text-blue-600 dark:text-blue-300 hover:underline">SenticNet</a> group at NTU, working under the guidance of Prof. Erik Cambria and Dr. Rui Mao.
-
-Previously, I completed my Bachelor's degree in Computer Science at Hunan University, advised by Prof. Xiangxiang Zeng and Prof. Haowen Chen.
-</p>
+      My name is <strong>Zihao Huang</strong>,
+      currently a Master of Computing (Artificial Intelligence) student at the National University of Singapore (NUS), under the supervision of <a href="https://www.comp.nus.edu.sg/disa/people/huangkw/" target="_blank" class="text-blue-600 dark:text-blue-300 hover:underline">Prof. Ke-Wei Huang</a>.
+      My research focuses on Natural Language Processing (NLP), and I'm especially interested in large language models and their applications in finance.
+      <br><br>
+      I'm also affiliated with the <a href="https://sentic.net/" target="_blank" class="text-blue-600 dark:text-blue-300 hover:underline">SenticNet</a> group at NTU,
+      working under the guidance of Prof. Erik Cambria and Dr. Rui Mao.
+      <br><br>
+      Previously, I completed my Bachelor's degree in Computer Science at Hunan University, advised by Prof. Xiangxiang Zeng and Prof. Haowen Chen.
+    </p>
   </section>
 
+  <!-- Footer -->
   <footer class="text-center mt-8 text-sm text-gray-600 dark:text-gray-400">
     <div class="flex justify-center space-x-4 my-4">
       <a href="mailto:zihaohuang@u.nus.edu">
