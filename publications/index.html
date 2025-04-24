@@ -52,8 +52,33 @@
   <button onclick="toggleTheme()" class="ml-4 px-2 py-1 border rounded text-sm">🌓</button>
 </nav>
 
-  <main><h1>📚 Publications</h1>
-<p>This page will list my academic publications and preprints.</p>
+  <main><div class="max-w-none">
+<h1>📚 Publications</h1>
+<hr>
+<!-- ✅ 单篇论文展示卡 -->
+<div class="border border-gray-300 dark:border-gray-700 rounded-xl p-6 bg-white dark:bg-gray-900 shadow-md mb-6">
+  <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+    📝 Application of Attention-Based Siamese Composite Neural Network in Medical Image Recognition
+  </h2>
+  <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">
+    <strong>Zihao Huang</strong>, Yue Wang, Weixing Xin, Xingtong Lin, Huizhen Li, Haowen Chen, Yizhen Lao, Xia Chen  
+    <br>
+    <em>arXiv preprint, 2023</em>
+  </p>
+  <p class="text-sm text-gray-700 dark:text-gray-300 mt-2">
+    This paper proposes a Siamese neural network integrated with attention mechanisms to tackle few-shot and fine-grained medical image classification.
+    Experimental results on COVID-19 lung samples demonstrate superior robustness and accuracy over standard CNNs under limited data scenarios.
+  </p>
+  <!-- ✅ 按钮区 -->
+  <div class="mt-4 flex flex-wrap gap-2">
+    <a href="https://arxiv.org/abs/2304.09783" target="_blank"
+      class="px-3 py-1 rounded bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition">
+      🔗 View on arXiv
+    </a>
+    <!-- 你可以未来添加 PDF, BibTex, Code 等 -->
+  </div>
+</div>
+</div>
 </main>
   <footer class="text-center mt-8 text-sm text-gray-600 dark:text-gray-400">
   <div class="flex justify-center space-x-4 my-4">
