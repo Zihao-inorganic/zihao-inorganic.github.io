@@ -81,6 +81,8 @@
 💥 Stress Relief
 </button>
 </div></p>
+<p><!-- ✅ 金币赚了多少钱计数器 -->
+<p id="stress-count" class="mt-3 text-sm text-yellow-600 dark:text-yellow-400 font-medium"></p></p>
   </div>
 </div>
 <!-- ✅ 正文介绍段 -->
@@ -93,7 +95,7 @@
     My research focuses on Natural Language Processing (NLP), and I'm especially interested in large language models and their applications in finance.
   </p>
   <p>
-    I'm also affiliated with the 
+    I'm also study with the 
     <a href="https://sentic.net/" target="_blank" class="text-blue-600 dark:text-blue-300 hover:underline">SenticNet</a> group at NTU, 
     working under the guidance of 
     <a href="https://sentic.net/erikcambria/" target="_blank" class="text-blue-600 dark:text-blue-300 hover:underline">Prof. Erik Cambria</a> and 
@@ -108,16 +110,25 @@
     on thesis and academic projects.
   </p>
 </section>
-<!-- ✅ Stress Relief 特效 JS -->
+<!-- ✅ Stress Relief 特效 JS：金币+金额 -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script>
+  let clickCount = 0;
+  const earnPerClick = 0.05;
+
   function triggerStressRelief() {
+    clickCount += 1;
+    const earned = (clickCount * earnPerClick).toFixed(2);
+    document.getElementById('stress-count').innerText = `💰 You've earned $${earned} so far!`;
+
     for (let i = 0; i < 4; i++) {
       setTimeout(() => {
         confetti({
-          particleCount: 100,
-          spread: 120,
-          startVelocity: 30,
+          particleCount: 60,
+          spread: 90,
+          startVelocity: 45,
+          colors: ['#FFD700', '#FFC107', '#FFEB3B'],
+          shapes: ['circle'],
           origin: {
             x: Math.random(),
             y: Math.random() - 0.2
