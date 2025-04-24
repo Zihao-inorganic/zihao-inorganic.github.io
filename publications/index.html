@@ -7,45 +7,39 @@
   <meta name="description" content="Zihao Huang is a Master's student at NUS, working on NLP, LLMs">
   <meta name="author" content="Zihao Huang">
 
-  <!-- 🔗 Open Graph Meta -->
   <meta property="og:title" content="Zihao Huang | Homepage">
   <meta property="og:description" content="NUS AI Master's student exploring NLP & LLMs.">
   <meta property="og:image" content="https://zihao-inorganic.github.io/assets/zihao.png">
   <meta property="og:url" content="https://zihao-inorganic.github.io/">
   <meta property="og:type" content="website">
 
-  <!-- ✅ Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    tailwind.config = { darkMode: 'class' };
+    tailwind.config = {
+      darkMode: 'class'
+    };
   </script>
-
-  <!-- ✅ Theme Toggle Script -->
   <script>
     if (localStorage.getItem('theme') === 'dark' ||
-        (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
     function toggleTheme() {
       const html = document.documentElement;
-      const isDark = html.classList.contains('dark');
-      html.classList.toggle('dark');
-      localStorage.setItem('theme', isDark ? 'light' : 'dark');
-      updateParticlesTheme();  // 🌌 粒子联动
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        html.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
     }
   </script>
-
-  <!-- ✅ tsParticles -->
-  <script src="https://cdn.jsdelivr.net/npm/tsparticles@3/tsparticles.bundle.min.js"></script>
 </head>
 
-<body class="relative bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans max-w-3xl mx-auto p-6">
-
-  <!-- ✅ 粒子背景容器 -->
-  <div id="tsparticles" class="fixed inset-0 z-[-1] pointer-events-none"></div>
-
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans max-w-3xl mx-auto p-6">
   <nav class="flex justify-between items-center mb-6">
   <h1 class="text-2xl font-bold">Zihao Huang</h1>
   <ul class="flex space-x-4 text-blue-600 dark:text-blue-300">
@@ -105,52 +99,6 @@
   </div>
   &copy; 2025 Zihao Huang
 </footer>
-
-
-  <!-- ✅ 粒子初始化脚本 -->
-  <script>
-    function loadParticles() {
-      const dark = document.documentElement.classList.contains('dark');
-      tsParticles.load("tsparticles", {
-        fullScreen: { enable: false },
-        background: {
-          color: { value: dark ? "#0f172a" : "#fdfbfb" }
-        },
-        particles: {
-          number: { value: 60 },
-          color: { value: dark ? "#ffffff" : "#000000" },
-          shape: { type: "circle" },
-          opacity: { value: 0.5 },
-          size: { value: 2.5 },
-          move: {
-            enable: true,
-            speed: 0.6,
-            direction: "none",
-            outModes: { default: "bounce" }
-          }
-        },
-        interactivity: {
-          events: {
-            onHover: { enable: true, mode: "repulse" },
-            onClick: { enable: false }
-          },
-          modes: {
-            repulse: { distance: 40 }
-          }
-        }
-      });
-    }
-
-    function updateParticlesTheme() {
-      const dark = document.documentElement.classList.contains('dark');
-      tsParticles.domItem(0).load({
-        background: { color: { value: dark ? "#0f172a" : "#fdfbfb" } },
-        particles: { color: { value: dark ? "#ffffff" : "#000000" } }
-      });
-    }
-
-    loadParticles(); // 页面首次加载时初始化
-  </script>
 
 </body>
 
