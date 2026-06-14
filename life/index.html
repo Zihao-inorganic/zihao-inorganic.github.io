@@ -7,11 +7,12 @@
   <title>Life</title>
   <meta name="description" content="Zihao Huang is a PhD student at NTU, working on NLP, LLMs, explainable AI, and reliable AI.">
   <meta name="author" content="Zihao Huang">
+  <link rel="canonical" href="https://zihao-inorganic.github.io/life/">
 
   <meta property="og:title" content="Life">
   <meta property="og:description" content="NTU CCDS PhD student exploring NLP, LLMs, explainable AI, reliable AI, and world models.">
   <meta property="og:image" content="https://zihao-inorganic.github.io/assets/zihao.png">
-  <meta property="og:url" content="https://zihao-inorganic.github.io/">
+  <meta property="og:url" content="https://zihao-inorganic.github.io/life/">
   <meta property="og:type" content="website">
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -41,17 +42,18 @@
 </head>
 
 <body class="mx-auto max-w-5xl bg-white p-4 font-sans text-gray-900 dark:bg-gray-900 dark:text-gray-100 sm:p-6">
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-sky-700 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white">Skip to content</a>
   <nav class="mb-8 flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-4 dark:border-slate-800">
   <h1 class="text-xl font-bold text-slate-950 dark:text-white sm:text-2xl">Zihao Huang</h1>
   <ul class="flex flex-wrap gap-4 text-sm font-semibold text-sky-700 dark:text-sky-300 sm:text-base">
-    <li><a href="/">Home</a></li>
-    <li><a href="/publications/">Publications</a></li>
-    <li><a href="/life/">Life</a></li>
+    <li><a href="/"  class="rounded-md px-2 py-1 transition hover:bg-sky-50 hover:text-sky-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 dark:hover:bg-sky-950 dark:hover:text-sky-100">Home</a></li>
+    <li><a href="/publications/"  class="rounded-md px-2 py-1 transition hover:bg-sky-50 hover:text-sky-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 dark:hover:bg-sky-950 dark:hover:text-sky-100">Publications</a></li>
+    <li><a href="/life/" aria-current="page" class="rounded-md px-2 py-1 transition hover:bg-sky-50 hover:text-sky-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 dark:hover:bg-sky-950 dark:hover:text-sky-100 bg-sky-50 text-sky-900 dark:bg-sky-950 dark:text-sky-100">Life</a></li>
   </ul>
-  <button onclick="toggleTheme()" class="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-semibold text-slate-700 transition hover:border-sky-500 hover:text-sky-700 dark:border-slate-700 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300">Theme</button>
+  <button onclick="toggleTheme()" type="button" aria-label="Toggle color theme" class="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-semibold text-slate-700 transition hover:border-sky-500 hover:text-sky-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 dark:border-slate-700 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300">Theme</button>
 </nav>
 
-  <main><div>
+  <main id="main-content"><div>
 <section class="mb-10 border-b border-slate-200 pb-8 dark:border-slate-800">
   <p class="mb-3 text-sm font-semibold uppercase tracking-wide text-sky-700 dark:text-sky-300">Beyond Research</p>
   <h1 class="mb-4 text-4xl font-bold leading-tight text-slate-950 dark:text-white">Life and Interests</h1>
@@ -70,7 +72,7 @@
         <span class="rounded-md bg-sky-50 px-3 py-1 text-sm font-semibold text-sky-800 dark:bg-sky-950 dark:text-sky-200">Skill Toys</span>
       </div>
       <div class="mx-auto mb-5 w-full max-w-md overflow-hidden rounded-lg border border-slate-200 bg-slate-100 dark:border-slate-800 dark:bg-slate-950">
-        <img src="/assets/peak-web.jpg" alt="CLYW Peak yo-yo" class="h-48 w-full object-cover sm:h-56">
+        <img src="/assets/peak-web.jpg" alt="CLYW Peak yo-yo" class="h-48 w-full object-cover sm:h-56" loading="lazy" decoding="async">
       </div>
       <p class="text-sm leading-7 text-slate-600 dark:text-slate-300">
         I enjoy both playing and collecting yo-yos. My favorite model is the Peak from CLYW.
@@ -96,6 +98,8 @@
           border="0"
           frameborder="no"
           framespacing="0"
+          loading="lazy"
+          referrerpolicy="strict-origin-when-cross-origin"
           allowfullscreen="true">
         </iframe>
       </div>
@@ -113,11 +117,11 @@
 </main>
   <footer class="text-center mt-8 text-sm text-gray-600 dark:text-gray-400">
   <div class="flex justify-center space-x-4 my-4">
-    <a href="mailto:zihao016@e.ntu.edu.sg">
-      <img src="/assets/email-icon.png" class="w-6 inline" alt="email">
+    <a href="mailto:zihao016@e.ntu.edu.sg" aria-label="Email Zihao Huang" class="rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">
+      <img src="/assets/email-icon.png" class="w-6 inline" alt="" loading="lazy" decoding="async">
     </a>
-    <a href="https://www.linkedin.com/in/littleinorganic/" target="_blank" rel="noopener">
-      <img src="/assets/linkedin-icon.png" class="w-6 inline" alt="LinkedIn">
+    <a href="https://www.linkedin.com/in/littleinorganic/" target="_blank" rel="noopener" aria-label="LinkedIn profile" class="rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">
+      <img src="/assets/linkedin-icon.png" class="w-6 inline" alt="" loading="lazy" decoding="async">
     </a>
   </div>
   &copy; 2026 Zihao Huang
