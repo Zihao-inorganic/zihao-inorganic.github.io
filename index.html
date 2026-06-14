@@ -383,6 +383,7 @@
     }
 
     function burst(x, y, color, count = 8) {
+      if (particles.length > 72) particles.splice(0, particles.length - 72);
       for (let i = 0; i < count; i++) {
         particles.push({
           x,
@@ -394,6 +395,7 @@
           size: Math.random() > 0.55 ? 4 : 3
         });
       }
+      if (particles.length > 96) particles.splice(0, particles.length - 96);
     }
 
     function intersects(a, b) {
@@ -421,7 +423,7 @@
         visualLevel = nextVisualLevel;
         styleNode.textContent = visualStages[visualLevel].name;
         statusNode.textContent = `${visualStages[visualLevel].name} Render`;
-        burst(snakeX + 24, groundY - 54, visualStages[visualLevel].accent, 24);
+        burst(snakeX + 24, groundY - 54, visualStages[visualLevel].accent, 14);
       }
       if (transitionProgress < 1) {
         transitionProgress = Math.min(1, transitionProgress + 0.024);
@@ -645,6 +647,7 @@
     }
 
     function drawPredictionLayer() {
+      if (transitionProgress < 1) return;
       const sense = getSenseLevel();
       const level = getRenderLevel();
       if (sense <= 0.02 || level < 2) return;
@@ -696,12 +699,13 @@
       ctx.globalAlpha = 1;
     }
 
-    function drawWorld(level) {
+    function drawWorld(level, options = {}) {
+      const { prediction = true, particlesOn = true } = options;
       renderVisualLevel = level;
       drawBackground();
-      drawPredictionLayer();
+      if (prediction) drawPredictionLayer();
       drawObstacles();
-      drawParticles();
+      if (particlesOn) drawParticles();
       drawSnake();
       renderVisualLevel = null;
     }
@@ -724,12 +728,12 @@
       if (transitionProgress < 1 && gameState === "running" && !crashed) {
         const steppedProgress = Math.floor(transitionProgress * 32) / 32;
         const split = Math.min(W, steppedProgress * (W + 24));
-        drawWorld(transitionFromLevel);
+        drawWorld(transitionFromLevel, { prediction: false, particlesOn: false });
         ctx.save();
         ctx.beginPath();
         ctx.rect(0, 0, split, H);
         ctx.clip();
-        drawWorld(transitionToLevel);
+        drawWorld(transitionToLevel, { prediction: false, particlesOn: true });
         ctx.restore();
         drawUpgradeScan(split);
       } else {
