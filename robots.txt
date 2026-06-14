@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://zihao-inorganic.github.io/sitemap.xml
