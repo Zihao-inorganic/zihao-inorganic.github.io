@@ -232,6 +232,7 @@
     let transitionFromLevel = 0;
     let transitionToLevel = 0;
     let transitionProgress = 1;
+    let transitionGraceFrames = 0;
     let lastObstacleType = "high";
 
     bestNode.textContent = best;
@@ -250,6 +251,7 @@
       transitionFromLevel = 0;
       transitionToLevel = 0;
       transitionProgress = 1;
+      transitionGraceFrames = 0;
       liftPower = 0;
       lastObstacleType = "high";
       scoreNode.textContent = "0";
@@ -320,7 +322,7 @@
 
     function setGlow(color, blur) {
       ctx.shadowColor = color;
-      ctx.shadowBlur = blur;
+      ctx.shadowBlur = transitionProgress < 1 ? Math.min(blur, 6) : blur;
     }
 
     function clearGlow() {
@@ -420,6 +422,7 @@
         transitionFromLevel = visualLevel;
         transitionToLevel = nextVisualLevel;
         transitionProgress = 0;
+        transitionGraceFrames = 48;
         visualLevel = nextVisualLevel;
         styleNode.textContent = visualStages[visualLevel].name;
         statusNode.textContent = `${visualStages[visualLevel].name} Render`;
@@ -428,6 +431,7 @@
       if (transitionProgress < 1) {
         transitionProgress = Math.min(1, transitionProgress + 0.024);
       }
+      if (transitionGraceFrames > 0) transitionGraceFrames--;
       nextGap -= speed;
 
       if (nextGap <= 0) queueObstacle();
@@ -456,7 +460,7 @@
       scoreNode.textContent = Math.floor(score);
       flowNode.textContent = `${combo}x`;
 
-      if (hasCollision()) endGame();
+      if (transitionGraceFrames <= 0 && hasCollision()) endGame();
     }
 
     function drawPixelRect(x, y, w, h, color) {
