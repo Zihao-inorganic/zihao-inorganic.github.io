@@ -67,7 +67,7 @@
     <div class="flex flex-wrap justify-center sm:justify-start gap-3">
       <a href="https://scholar.google.com.hk/citations?user=h1Zfk-MAAAAJ&hl=zh-CN" target="_blank" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">📘 Google Scholar</a>
       <a href="https://github.com/Zihao-inorganic" target="_blank" class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition">🐙 GitHub</a>
-      <button id="snake-start-button" type="button" class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition">Pixel Break</button>
+      <button id="snake-start-button" type="button" class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition">Start Break</button>
     </div>
     <div id="snake-break-panel" class="hidden mt-5 w-full max-w-md overflow-hidden rounded-xl border border-slate-300 bg-slate-950 text-slate-100 shadow-xl dark:border-slate-700">
       <div class="flex items-center justify-between border-b border-slate-800 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
@@ -163,7 +163,7 @@
     const pixel = 4;
     let animationId = null;
     let running = false;
-    let started = false;
+    let gameState = "idle";
     let lifting = false;
     let score = 0;
     let best = Number(localStorage.getItem("snakeBreakBest") || 0);
@@ -176,14 +176,15 @@
 
     function resetGame() {
       score = 0;
-      speed = 2.8;
+      speed = 2.65;
       frame = 0;
-      nextGap = 76;
+      nextGap = 70;
       obstacles = [];
       scoreNode.textContent = "0";
       statusNode.textContent = "Running";
+      button.textContent = "Stop Break";
       running = true;
-      started = true;
+      gameState = "running";
       cancelAnimationFrame(animationId);
       animationId = requestAnimationFrame(loop);
     }
@@ -191,12 +192,29 @@
     function startGame() {
       panel.classList.remove("hidden");
       canvas.focus();
-      if (!running) resetGame();
+      if (running) {
+        stopGame();
+      } else {
+        resetGame();
+      }
+    }
+
+    function stopGame() {
+      running = false;
+      gameState = "stopped";
+      lifting = false;
+      statusNode.textContent = "Stopped";
+      button.textContent = "Restart Break";
+      cancelAnimationFrame(animationId);
+      drawScene();
     }
 
     function endGame() {
       running = false;
+      gameState = "crashed";
+      lifting = false;
       statusNode.textContent = "Crashed";
+      button.textContent = "Restart Break";
       best = Math.max(best, Math.floor(score));
       localStorage.setItem("snakeBreakBest", best);
       bestNode.textContent = best;
@@ -205,29 +223,30 @@
 
     function queueObstacle() {
       const high = Math.random() > 0.55;
+      const width = high ? 26 + Math.random() * 36 : 42 + Math.random() * 56;
       obstacles.push({
         x: W + 18,
         type: high ? "high" : "low",
-        width: high ? 24 : 18,
+        width,
         passed: false
       });
-      nextGap = 82 + Math.random() * 74;
+      nextGap = width + 108 + Math.random() * 78;
     }
 
     function getSnakeBoxes() {
-      const headTop = lifting ? groundY - 62 : groundY - 34;
+      const headTop = lifting ? groundY - 66 : groundY - 30;
       return {
-        body: { x: snakeX - 36, y: groundY - 18, w: 56, h: 16 },
-        head: { x: snakeX + 16, y: headTop, w: 22, h: 22 },
-        neck: { x: snakeX + 8, y: headTop + 18, w: 10, h: groundY - headTop - 20 }
+        body: { x: snakeX - 42, y: groundY - 16, w: 68, h: 14 },
+        head: { x: snakeX + 18, y: headTop, w: 16, h: 16 },
+        neck: { x: snakeX + 10, y: headTop + 14, w: 8, h: groundY - headTop - 16 }
       };
     }
 
     function getObstacleBox(obstacle) {
       if (obstacle.type === "low") {
-        return { x: obstacle.x, y: groundY - 40, w: obstacle.width, h: 20 };
+        return { x: obstacle.x, y: groundY - 36, w: obstacle.width, h: 18 };
       }
-      return { x: obstacle.x, y: groundY - 66, w: obstacle.width, h: 24 };
+      return { x: obstacle.x, y: groundY - 76, w: obstacle.width, h: 26 };
     }
 
     function intersects(a, b) {
@@ -238,21 +257,21 @@
       const snake = getSnakeBoxes();
       return obstacles.some((obstacle) => {
         const box = getObstacleBox(obstacle);
-        return intersects(snake.head, box) || intersects(snake.neck, box);
+        return intersects(snake.head, box);
       });
     }
 
     function update() {
       frame++;
       score += 0.08;
-      speed = Math.min(6.2, speed + 0.0009);
+      speed = Math.min(5.9, speed + 0.0008);
       nextGap -= speed;
 
       if (nextGap <= 0) queueObstacle();
 
       obstacles.forEach((obstacle) => {
         obstacle.x -= speed;
-        if (!obstacle.passed && obstacle.x + obstacle.width < snakeX - 36) {
+        if (!obstacle.passed && obstacle.x + obstacle.width < snakeX - 42) {
           obstacle.passed = true;
           score += 4;
         }
@@ -289,15 +308,22 @@
     function drawSnake() {
       const snake = getSnakeBoxes();
       const blink = Math.floor(frame / 10) % 2 === 0;
+      const wiggle = Math.floor(frame / 8) % 2;
 
-      drawPixelRect(snake.body.x, snake.body.y, snake.body.w, snake.body.h, "#34d399");
-      drawPixelRect(snake.body.x - 8, snake.body.y + 4, 14, 10, "#10b981");
+      drawPixelRect(snake.body.x, snake.body.y + 2, 16, 10, "#10b981");
+      drawPixelRect(snake.body.x + 14, snake.body.y, 18, 14, "#34d399");
+      drawPixelRect(snake.body.x + 30, snake.body.y + 2, 18, 12, "#6ee7b7");
+      drawPixelRect(snake.body.x + 46, snake.body.y, 20, 14, "#34d399");
+      drawPixelRect(snake.body.x - 10, snake.body.y + 5 + wiggle * 2, 12, 6, "#059669");
       drawPixelRect(snake.neck.x, snake.neck.y, snake.neck.w, snake.neck.h, "#34d399");
-      drawPixelRect(snake.head.x, snake.head.y, snake.head.w, snake.head.h, "#6ee7b7");
-      drawPixelRect(snake.head.x + 16, snake.head.y + 6, 4, 4, blink ? "#0f172a" : "#6ee7b7");
-      drawPixelRect(snake.head.x + 21, snake.head.y + 13, 8, 4, "#f43f5e");
-      drawPixelRect(snake.body.x + 8, snake.body.y + 14, 8, 6, "#059669");
-      drawPixelRect(snake.body.x + 38, snake.body.y + 14, 8, 6, "#059669");
+      drawPixelRect(snake.neck.x - 4, snake.neck.y + 10, 8, Math.max(4, snake.neck.h - 10), "#10b981");
+      drawPixelRect(snake.head.x, snake.head.y, snake.head.w, snake.head.h, "#a7f3d0");
+      drawPixelRect(snake.head.x + 2, snake.head.y - 4, 10, 4, "#34d399");
+      drawPixelRect(snake.head.x + 12, snake.head.y + 4, 3, 3, blink ? "#0f172a" : "#a7f3d0");
+      drawPixelRect(snake.head.x + 3, snake.head.y + 10, 4, 3, "#f9a8d4");
+      drawPixelRect(snake.head.x + 15, snake.head.y + 10, 6, 3, "#fb7185");
+      drawPixelRect(snake.body.x + 14, snake.body.y + 13, 8, 5, "#047857");
+      drawPixelRect(snake.body.x + 48, snake.body.y + 13, 8, 5, "#047857");
     }
 
     function drawObstacles() {
@@ -305,8 +331,9 @@
         const box = getObstacleBox(obstacle);
         const color = obstacle.type === "low" ? "#f97316" : "#818cf8";
         drawPixelRect(box.x, box.y, box.w, box.h, color);
-        drawPixelRect(box.x + 4, box.y - 6, box.w - 8, 6, color);
-        drawPixelRect(box.x + box.w - 6, box.y + 4, 4, 6, "#0f172a");
+        drawPixelRect(box.x + 4, box.y - 6, Math.max(8, box.w - 8), 6, color);
+        drawPixelRect(box.x + 6, box.y + 4, 4, 4, "#fed7aa");
+        drawPixelRect(box.x + box.w - 10, box.y + box.h - 8, 4, 4, "#0f172a");
       });
     }
 
@@ -315,13 +342,14 @@
       drawObstacles();
       drawSnake();
 
-      if (!started || crashed) {
+      if (gameState !== "running" || crashed) {
         ctx.fillStyle = "rgba(2, 6, 23, 0.72)";
         ctx.fillRect(0, 0, W, H);
         ctx.fillStyle = "#e2e8f0";
         ctx.font = "bold 16px monospace";
         ctx.textAlign = "center";
-        ctx.fillText(crashed ? "TRY AGAIN" : "PIXEL BREAK", W / 2, H / 2 - 4);
+        const message = crashed ? "TRY AGAIN" : gameState === "stopped" ? "STOPPED" : "PIXEL BREAK";
+        ctx.fillText(message, W / 2, H / 2 - 4);
       }
     }
 
@@ -334,7 +362,6 @@
 
     function setLift(value) {
       lifting = value;
-      if (!running && panel.classList.contains("hidden") === false) resetGame();
     }
 
     button.addEventListener("click", startGame);
@@ -346,7 +373,7 @@
       if (event.code !== "Space") return;
       event.preventDefault();
       if (panel.classList.contains("hidden")) startGame();
-      setLift(true);
+      if (running) setLift(true);
     });
 
     window.addEventListener("keyup", (event) => {
