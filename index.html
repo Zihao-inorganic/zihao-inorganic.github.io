@@ -76,6 +76,7 @@
           <div class="flex gap-4">
             <span>Score <span id="snake-score" class="text-sky-300">0</span></span>
             <span>Best <span id="snake-best" class="text-amber-300">0</span></span>
+            <span>Flow <span id="snake-flow" class="text-emerald-300">1x</span></span>
           </div>
         </div>
         <canvas id="snake-break-game" class="block h-44 w-full bg-slate-950" width="480" height="176" aria-label="Pixel snake mini game" tabindex="0"></canvas>
@@ -180,6 +181,7 @@
     const canvas = document.getElementById("snake-break-game");
     const scoreNode = document.getElementById("snake-score");
     const bestNode = document.getElementById("snake-best");
+    const flowNode = document.getElementById("snake-flow");
     const statusNode = document.getElementById("snake-status");
     const ctx = canvas.getContext("2d");
 
@@ -188,18 +190,28 @@
     const groundY = 132;
     const snakeX = 82;
     const pixel = 4;
-    const maxDifficulty = 0.85;
-    const maxSpeed = 5.6;
+    const maxDifficulty = 0.9;
+    const maxSpeed = 5.65;
+    const stars = Array.from({ length: 28 }, (_, i) => ({
+      x: (i * 57) % W,
+      y: 14 + ((i * 23) % 72),
+      s: i % 3 === 0 ? 2 : 1,
+      layer: 0.18 + (i % 4) * 0.08
+    }));
     let animationId = null;
     let running = false;
     let gameState = "idle";
     let lifting = false;
+    let liftPower = 0;
     let score = 0;
     let best = Number(localStorage.getItem("snakeBreakBest") || 0);
     let speed = 2.8;
     let frame = 0;
     let nextGap = 86;
     let obstacles = [];
+    let particles = [];
+    let combo = 1;
+    let streak = 0;
     let lastObstacleType = "high";
 
     bestNode.textContent = best;
@@ -208,10 +220,15 @@
       score = 0;
       speed = 2.65;
       frame = 0;
-      nextGap = 70;
+      nextGap = 78;
       obstacles = [];
+      particles = [];
+      combo = 1;
+      streak = 0;
+      liftPower = 0;
       lastObstacleType = "high";
       scoreNode.textContent = "0";
+      flowNode.textContent = "1x";
       statusNode.textContent = "Running";
       button.textContent = "Stop Break";
       running = true;
@@ -234,6 +251,7 @@
       running = false;
       gameState = "stopped";
       lifting = false;
+      liftPower = 0;
       statusNode.textContent = "Stopped";
       button.textContent = "Restart Break";
       cancelAnimationFrame(animationId);
@@ -244,38 +262,41 @@
       running = false;
       gameState = "crashed";
       lifting = false;
+      liftPower = 0;
       statusNode.textContent = "Crashed";
       button.textContent = "Restart Break";
       best = Math.max(best, Math.floor(score));
       localStorage.setItem("snakeBreakBest", best);
       bestNode.textContent = best;
+      burst(snakeX + 22, lifting ? groundY - 58 : groundY - 24, "#fb7185", 18);
       drawScene(true);
     }
 
     function getDifficulty() {
-      return Math.min(score / 140, maxDifficulty);
+      return Math.min(score / 155, maxDifficulty);
     }
 
     function queueObstacle() {
       const difficulty = getDifficulty();
-      const shouldSwitch = Math.random() < 0.48 + difficulty * 0.34;
+      const shouldSwitch = Math.random() < 0.52 + difficulty * 0.28;
       const type = shouldSwitch ? (lastObstacleType === "high" ? "low" : "high") : lastObstacleType;
       const width = type === "high"
-        ? 24 + Math.random() * (30 + difficulty * 14)
-        : 42 + Math.random() * (34 + difficulty * 24);
+        ? 24 + Math.random() * (26 + difficulty * 12)
+        : 44 + Math.random() * (44 + difficulty * 22);
 
       obstacles.push({
         x: W + 18,
         type,
         width,
+        wave: Math.random() * Math.PI,
         passed: false
       });
       lastObstacleType = type;
-      nextGap = width + 132 - difficulty * 42 + Math.random() * (72 - difficulty * 24);
+      nextGap = width + 124 - difficulty * 36 + Math.random() * (66 - difficulty * 18);
     }
 
     function getSnakeBoxes() {
-      const headTop = lifting ? groundY - 66 : groundY - 30;
+      const headTop = groundY - 30 - liftPower * 36;
       return {
         body: { x: snakeX - 42, y: groundY - 16, w: 68, h: 14 },
         head: { x: snakeX + 18, y: headTop, w: 16, h: 16 },
@@ -288,6 +309,20 @@
         return { x: obstacle.x, y: groundY - 36, w: obstacle.width, h: 18 };
       }
       return { x: obstacle.x, y: groundY - 76, w: obstacle.width, h: 26 };
+    }
+
+    function burst(x, y, color, count = 8) {
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x,
+          y,
+          vx: -1.4 - Math.random() * 2.2,
+          vy: -1.8 + Math.random() * 3.6,
+          life: 18 + Math.random() * 18,
+          color,
+          size: Math.random() > 0.55 ? 4 : 3
+        });
+      }
     }
 
     function intersects(a, b) {
@@ -304,8 +339,9 @@
 
     function update() {
       frame++;
-      score += 0.08;
-      speed = Math.min(maxSpeed, 2.65 + Math.floor(score / 30) * 0.24 + score * 0.004);
+      liftPower += ((lifting ? 1 : 0) - liftPower) * 0.34;
+      score += 0.08 + combo * 0.006;
+      speed = Math.min(maxSpeed, 2.65 + Math.floor(score / 32) * 0.24 + score * 0.0035);
       nextGap -= speed;
 
       if (nextGap <= 0) queueObstacle();
@@ -314,12 +350,25 @@
         obstacle.x -= speed;
         if (!obstacle.passed && obstacle.x + obstacle.width < snakeX - 42) {
           obstacle.passed = true;
-          score += 4;
+          streak++;
+          combo = Math.min(5, 1 + Math.floor(streak / 4));
+          score += 3.5 + combo * 0.8;
+          burst(snakeX - 20, groundY - 18, obstacle.type === "low" ? "#fbbf24" : "#a5b4fc", 7 + combo);
         }
       });
 
       obstacles = obstacles.filter((obstacle) => obstacle.x > -40);
+      particles = particles
+        .map((particle) => ({
+          ...particle,
+          x: particle.x + particle.vx,
+          y: particle.y + particle.vy,
+          vy: particle.vy + 0.08,
+          life: particle.life - 1
+        }))
+        .filter((particle) => particle.life > 0);
       scoreNode.textContent = Math.floor(score);
+      flowNode.textContent = `${combo}x`;
 
       if (hasCollision()) endGame();
     }
@@ -330,20 +379,40 @@
     }
 
     function drawBackground() {
-      ctx.fillStyle = "#020617";
+      const sky = ctx.createLinearGradient(0, 0, 0, H);
+      sky.addColorStop(0, "#020617");
+      sky.addColorStop(0.62, "#0f172a");
+      sky.addColorStop(1, "#111827");
+      ctx.fillStyle = sky;
       ctx.fillRect(0, 0, W, H);
+
+      stars.forEach((star, i) => {
+        const x = (star.x - frame * speed * star.layer + W * 3) % W;
+        const glow = Math.sin(frame * 0.045 + i) > 0.25;
+        ctx.fillStyle = glow ? "#bae6fd" : "#64748b";
+        ctx.fillRect(Math.round(x / pixel) * pixel, star.y, star.s * pixel, star.s * pixel);
+      });
+
+      ctx.fillStyle = "rgba(56, 189, 248, 0.16)";
+      for (let x = -((frame * speed * 0.15) % 92); x < W; x += 92) {
+        ctx.fillRect(x, 78, 34, 4);
+        ctx.fillRect(x + 10, 72, 18, 4);
+      }
+
       ctx.fillStyle = "#0f172a";
       for (let x = -((frame * speed * 0.35) % 32); x < W; x += 32) {
         ctx.fillRect(x, groundY + 18, 18, 2);
+      }
+      for (let x = -((frame * speed * 0.75) % 44); x < W; x += 44) {
+        ctx.fillStyle = "#164e63";
+        ctx.fillRect(x, groundY + 28, 14, 4);
+        ctx.fillStyle = "#0e7490";
+        ctx.fillRect(x + 18, groundY + 32, 8, 4);
       }
       ctx.fillStyle = "#1e293b";
       ctx.fillRect(0, groundY + 2, W, 4);
       ctx.fillStyle = "#334155";
       ctx.fillRect(0, groundY + 8, W, 2);
-      ctx.fillStyle = "#38bdf8";
-      ctx.fillRect(58, 34, 4, 4);
-      ctx.fillRect(306, 42, 4, 4);
-      ctx.fillRect(402, 26, 4, 4);
     }
 
     function getBodyLiftAt(x) {
@@ -362,8 +431,9 @@
 
     function drawSnake() {
       const snake = getSnakeBoxes();
-      const blink = Math.floor(frame / 10) % 2 === 0;
+      const blink = Math.floor(frame / 18) % 8 !== 0;
       const wiggle = Math.floor(frame / 8) % 2;
+      const smile = combo >= 3;
       const bodySegments = [
         { x: snake.body.x, y: snake.body.y + 3, w: 16, h: 10, color: "#0284c7" },
         { x: snake.body.x + 14, y: snake.body.y + 1, w: 18, h: 14, color: "#0ea5e9" },
@@ -406,25 +476,46 @@
       drawPixelRect(snake.head.x + 2, snake.head.y - 4, 10, 4, "#38bdf8");
       drawPixelRect(snake.head.x + 12, snake.head.y + 4, 3, 3, blink ? "#0f172a" : "#bae6fd");
       drawPixelRect(snake.head.x + 3, snake.head.y + 10, 4, 3, "#f9a8d4");
-      drawPixelRect(snake.head.x + 15, snake.head.y + 10, 6, 3, "#fb7185");
+      drawPixelRect(snake.head.x + 15, snake.head.y + (smile ? 12 : 10), 6, 3, "#fb7185");
       drawPixelRect(snake.head.x + 1, snake.head.y - 7, 3, 5, "#7dd3fc");
       drawPixelRect(snake.head.x + 10, snake.head.y - 7, 3, 5, "#7dd3fc");
+
+      if (combo >= 4) {
+        drawPixelRect(snake.head.x + 4, snake.head.y - 12, 3, 3, "#fde68a");
+        drawPixelRect(snake.head.x + 10, snake.head.y - 12, 3, 3, "#fde68a");
+      }
     }
 
     function drawObstacles() {
       obstacles.forEach((obstacle) => {
         const box = getObstacleBox(obstacle);
-        const color = obstacle.type === "low" ? "#f97316" : "#818cf8";
-        drawPixelRect(box.x, box.y, box.w, box.h, color);
-        drawPixelRect(box.x + 4, box.y - 6, Math.max(8, box.w - 8), 6, color);
-        drawPixelRect(box.x + 6, box.y + 4, 4, 4, "#fed7aa");
-        drawPixelRect(box.x + box.w - 10, box.y + box.h - 8, 4, 4, "#0f172a");
+        if (obstacle.type === "low") {
+          drawPixelRect(box.x, box.y + 8, box.w, box.h - 8, "#f97316");
+          drawPixelRect(box.x + 4, box.y, Math.max(8, box.w - 8), 8, "#fb923c");
+          drawPixelRect(box.x + 8, box.y + 10, 5, 5, "#fed7aa");
+          drawPixelRect(box.x + box.w - 14, box.y + 10, 5, 5, "#7c2d12");
+        } else {
+          const wave = Math.sin(frame * 0.08 + obstacle.wave) * 2;
+          drawPixelRect(box.x, box.y + wave, box.w, box.h, "#818cf8");
+          drawPixelRect(box.x + 4, box.y - 8 + wave, Math.max(8, box.w - 8), 8, "#a5b4fc");
+          drawPixelRect(box.x + box.w - 10, box.y + 6 + wave, 5, 5, "#312e81");
+          drawPixelRect(box.x + 6, box.y + box.h - 8 + wave, 5, 5, "#c7d2fe");
+        }
       });
+    }
+
+    function drawParticles() {
+      particles.forEach((particle) => {
+        ctx.globalAlpha = Math.max(0, Math.min(1, particle.life / 22));
+        drawPixelRect(particle.x, particle.y, particle.size, particle.size, particle.color);
+      });
+      ctx.globalAlpha = 1;
     }
 
     function drawScene(crashed = false) {
       drawBackground();
       drawObstacles();
+      drawParticles();
       drawSnake();
 
       if (gameState !== "running" || crashed) {
@@ -435,6 +526,9 @@
         ctx.textAlign = "center";
         const message = crashed ? "TRY AGAIN" : gameState === "stopped" ? "STOPPED" : "PIXEL BREAK";
         ctx.fillText(message, W / 2, H / 2 - 4);
+        ctx.fillStyle = "#38bdf8";
+        ctx.font = "bold 10px monospace";
+        ctx.fillText(`BEST ${best}`, W / 2, H / 2 + 18);
       }
     }
 
@@ -447,14 +541,24 @@
 
     function setLift(value) {
       lifting = value;
+      statusNode.textContent = running ? (value ? "Lift" : "Running") : statusNode.textContent;
     }
 
     button.addEventListener("click", startGame);
-    canvas.addEventListener("pointerdown", () => setLift(true));
+    canvas.addEventListener("pointerdown", (event) => {
+      canvas.setPointerCapture(event.pointerId);
+      if (!running && gameState !== "running") startGame();
+      setLift(true);
+    });
     canvas.addEventListener("pointerup", () => setLift(false));
     canvas.addEventListener("pointerleave", () => setLift(false));
 
     window.addEventListener("keydown", (event) => {
+      if (event.code === "KeyP" && !panel.classList.contains("hidden")) {
+        event.preventDefault();
+        if (running) stopGame();
+        return;
+      }
       if (event.code !== "Space") return;
       event.preventDefault();
       if (panel.classList.contains("hidden")) startGame();
