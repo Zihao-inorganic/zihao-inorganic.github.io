@@ -50,59 +50,99 @@
   <button onclick="toggleTheme()" class="ml-4 px-2 py-1 border rounded text-sm">🌓</button>
 </nav>
 
-  <main><div class="max-w-none">
-<h1>📚 Publications</h1>
-<hr>
-<h2>🎓 PhD</h2>
-<p class="text-sm text-gray-500 italic">
-  (To be updated...)
-</p>
-<hr>
-<h2>🎓 Master</h2>
-<div class="border border-gray-300 dark:border-gray-700 rounded-xl p-6 bg-white dark:bg-gray-900 shadow-md mb-6">
-  <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-    📝 Combining LLM-Generated Knowledge Graphs with RAG for Financial Sentiment Extraction
-  </h2>
-  <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">
-    <strong>Zihao Huang</strong>, Kelvin Du, Xulang Zhang, Rui Mao, Erik Cambria
-    <br>
-    <em>2025 IEEE International Conference on Data Mining Workshops (ICDMW), 2025</em>
-  </p>
-  <p class="text-sm text-gray-700 dark:text-gray-300 mt-2">
-    This work integrates LLM-generated knowledge graphs with retrieval-augmented generation (RAG) for financial sentiment extraction.
-    By transforming financial texts into structured knowledge graph representations and leveraging retrieval over graph-grounded evidence,
-    the framework enables more context-aware and evidence-based sentiment assessment while improving efficiency without extensive fine-tuning.
-  </p>
-  <div class="mt-4">
-    <a href="https://ww.sentic.net/knowledge-graphs-with-rag-for-financial-sentiment-extraction.pdf"
-      target="_blank"
-      class="px-3 py-1 rounded bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition">
-      🔍 View 
-    </a>
-  </div>
-</div>
-<hr>
-<h2>🎓 Undergraduate</h2>
-<div class="border border-gray-300 dark:border-gray-700 rounded-xl p-6 bg-white dark:bg-gray-900 shadow-md mb-6">
-  <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-    📝 Application of Attention-Based Siamese Composite Neural Network in Medical Image Recognition
-  </h2>
-  <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">
-    <strong>Zihao Huang</strong>, Yue Wang, Weixing Xin, Xingtong Lin, Huizhen Li, Haowen Chen, Yizhen Lao, Xia Chen  
-    <br>
-    <em>arXiv preprint, 2023</em>
-  </p>
-  <p class="text-sm text-gray-700 dark:text-gray-300 mt-2">
-    This paper proposes a Siamese neural network integrated with attention mechanisms to tackle few-shot and fine-grained medical image classification.
-    Experimental results on COVID-19 lung samples demonstrate superior robustness and accuracy over standard CNNs under limited data scenarios.
-  </p>
-  <div class="mt-4">
-    <a href="https://arxiv.org/pdf/2304.09783" target="_blank"
-      class="px-3 py-1 rounded bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition">
-      🔍 View
-    </a>
-  </div>
-</div>
+  <main><div>
+  <section class="mb-10 border-b border-slate-200 pb-8 dark:border-slate-800">
+    <p class="mb-3 text-sm font-semibold uppercase tracking-wide text-sky-700 dark:text-sky-300">Research Output</p>
+    <h1 class="mb-4 text-4xl font-bold leading-tight text-slate-950 dark:text-white">Publications</h1>
+    <p class="max-w-2xl text-lg leading-8 text-slate-700 dark:text-slate-300">
+      Papers are sorted by author order first, then by recency. Hover over a title to preview the abstract; click the title to search it on Google Scholar.
+    </p>
+  </section>
+  <section class="mb-10">
+    <div class="mb-5 flex items-end justify-between gap-4">
+      <div>
+        <p class="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">PhD</p>
+        <h2 class="text-2xl font-bold text-slate-950 dark:text-white">PhD Publications</h2>
+      </div>
+      <span class="text-sm text-slate-500 dark:text-slate-400">0 papers</span>
+    </div>
+    <div class="space-y-4">
+    <p class="rounded-lg border border-dashed border-slate-200 p-5 text-sm text-slate-500 dark:border-slate-800 dark:text-slate-400">To be updated.</p>
+    </div>
+  </section>
+  <section class="mb-10">
+    <div class="mb-5 flex items-end justify-between gap-4">
+      <div>
+        <p class="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Master</p>
+        <h2 class="text-2xl font-bold text-slate-950 dark:text-white">Master Publications</h2>
+      </div>
+      <span class="text-sm text-slate-500 dark:text-slate-400">2 papers</span>
+    </div>
+    <div class="space-y-4">
+    <article class="group relative rounded-lg border border-slate-200 bg-white p-5 transition hover:border-sky-300 hover:bg-sky-50/40 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-sky-700 dark:hover:bg-sky-950/30">
+      <div class="mb-3 flex flex-wrap gap-2">
+        <span class="rounded-md bg-sky-50 px-2.5 py-1 text-xs font-semibold text-sky-800 dark:bg-sky-950 dark:text-sky-200">#1 author</span>
+        <span class="rounded-md bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">2026</span>
+        <span class="rounded-md bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">Conference Paper</span>
+      </div>
+      <h3 class="relative text-lg font-bold leading-7 text-slate-950 dark:text-white">
+        <a href="https://scholar.google.com/scholar?q=From+10-K+to+Industry+Multi-Labels%3A+A+Bottom-Up+LLM-Driven+Product+Clustering+with+Pareto+Frontier+Analysis" target="_blank" rel="noopener" class="peer hover:text-sky-700 hover:underline dark:hover:text-sky-300">From 10-K to Industry Multi-Labels: A Bottom-Up LLM-Driven Product Clustering with Pareto Frontier Analysis</a>
+        <span class="pointer-events-none absolute left-0 top-full z-20 mt-3 hidden w-[min(36rem,calc(100vw-4rem))] rounded-lg border border-slate-200 bg-white p-4 text-sm font-normal leading-6 text-slate-700 shadow-xl peer-hover:block peer-focus:block dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200">
+          <span class="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Abstract</span>
+          This work studies industry multi-labeling from firms' 10-K filings using a bottom-up LLM-driven product clustering pipeline. It frames product-level textual evidence as a way to derive industry labels and uses Pareto frontier analysis to reason about the trade-off between coverage and label quality.
+        </span>
+      </h3>
+      <p class="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300"><strong>Zihao Huang</strong>, Joel Quek, Ke-Wei Huang</p>
+      <p class="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400"><em>IEEE Conference on Artificial Intelligence (CAI), CAI 2026</em></p>
+      <a href="https://www.comp.nus.edu.sg/~huangkw/CV.pdf" target="_blank" rel="noopener" class="mt-4 inline-flex text-sm font-semibold text-sky-700 hover:underline dark:text-sky-300">Source</a>
+    </article>
+    <article class="group relative rounded-lg border border-slate-200 bg-white p-5 transition hover:border-sky-300 hover:bg-sky-50/40 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-sky-700 dark:hover:bg-sky-950/30">
+      <div class="mb-3 flex flex-wrap gap-2">
+        <span class="rounded-md bg-sky-50 px-2.5 py-1 text-xs font-semibold text-sky-800 dark:bg-sky-950 dark:text-sky-200">#1 author</span>
+        <span class="rounded-md bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">2025</span>
+        <span class="rounded-md bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">Conference Paper</span>
+      </div>
+      <h3 class="relative text-lg font-bold leading-7 text-slate-950 dark:text-white">
+        <a href="https://scholar.google.com/scholar?q=Combining+LLM-Generated+Knowledge+Graphs+with+RAG+for+Financial+Sentiment+Extraction" target="_blank" rel="noopener" class="peer hover:text-sky-700 hover:underline dark:hover:text-sky-300">Combining LLM-Generated Knowledge Graphs with RAG for Financial Sentiment Extraction</a>
+        <span class="pointer-events-none absolute left-0 top-full z-20 mt-3 hidden w-[min(36rem,calc(100vw-4rem))] rounded-lg border border-slate-200 bg-white p-4 text-sm font-normal leading-6 text-slate-700 shadow-xl peer-hover:block peer-focus:block dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200">
+          <span class="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Abstract</span>
+          This work integrates LLM-generated knowledge graphs with retrieval-augmented generation for financial sentiment extraction. By transforming financial texts into structured graph representations and retrieving graph-grounded evidence, the framework supports more contextual and evidence-based sentiment assessment.
+        </span>
+      </h3>
+      <p class="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300"><strong>Zihao Huang</strong>, Kelvin Du, Xulang Zhang, Rui Mao, Erik Cambria</p>
+      <p class="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400"><em>2025 IEEE International Conference on Data Mining Workshops (ICDMW), ICDMW 2025</em></p>
+      <a href="https://doi.org/10.1109/ICDMW69685.2025.00250" target="_blank" rel="noopener" class="mt-4 inline-flex text-sm font-semibold text-sky-700 hover:underline dark:text-sky-300">Source</a>
+    </article>
+    </div>
+  </section>
+  <section class="mb-10">
+    <div class="mb-5 flex items-end justify-between gap-4">
+      <div>
+        <p class="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Undergraduate</p>
+        <h2 class="text-2xl font-bold text-slate-950 dark:text-white">Undergraduate Publications</h2>
+      </div>
+      <span class="text-sm text-slate-500 dark:text-slate-400">1 paper</span>
+    </div>
+    <div class="space-y-4">
+    <article class="group relative rounded-lg border border-slate-200 bg-white p-5 transition hover:border-sky-300 hover:bg-sky-50/40 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-sky-700 dark:hover:bg-sky-950/30">
+      <div class="mb-3 flex flex-wrap gap-2">
+        <span class="rounded-md bg-sky-50 px-2.5 py-1 text-xs font-semibold text-sky-800 dark:bg-sky-950 dark:text-sky-200">#1 author</span>
+        <span class="rounded-md bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">2023</span>
+        <span class="rounded-md bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">Preprint</span>
+      </div>
+      <h3 class="relative text-lg font-bold leading-7 text-slate-950 dark:text-white">
+        <a href="https://scholar.google.com/scholar?q=Application+of+Attention-Based+Siamese+Composite+Neural+Network+in+Medical+Image+Recognition" target="_blank" rel="noopener" class="peer hover:text-sky-700 hover:underline dark:hover:text-sky-300">Application of Attention-Based Siamese Composite Neural Network in Medical Image Recognition</a>
+        <span class="pointer-events-none absolute left-0 top-full z-20 mt-3 hidden w-[min(36rem,calc(100vw-4rem))] rounded-lg border border-slate-200 bg-white p-4 text-sm font-normal leading-6 text-slate-700 shadow-xl peer-hover:block peer-focus:block dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200">
+          <span class="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Abstract</span>
+          This paper proposes an attention-based Siamese composite neural network for few-shot and fine-grained medical image recognition. Experiments on COVID-19 lung samples show that the model is more robust than ordinary neural networks when the number of training images is very small.
+        </span>
+      </h3>
+      <p class="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300"><strong>Zihao Huang</strong>, Yue Wang, Weixing Xin, Xingtong Lin, Huizhen Li, Haowen Chen, Yizhen Lao, Xia Chen</p>
+      <p class="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400"><em>arXiv preprint, arXiv 2023</em></p>
+      <a href="https://arxiv.org/abs/2304.09783" target="_blank" rel="noopener" class="mt-4 inline-flex text-sm font-semibold text-sky-700 hover:underline dark:text-sky-300">Source</a>
+    </article>
+    </div>
+  </section>
 </div>
 </main>
   <footer class="text-center mt-8 text-sm text-gray-600 dark:text-gray-400">
