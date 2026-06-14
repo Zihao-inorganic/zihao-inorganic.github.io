@@ -52,98 +52,114 @@
   <button onclick="toggleTheme()" class="ml-4 px-2 py-1 border rounded text-sm">🌓</button>
 </nav>
 
-  <main><!-- ✅ 顶部 Hero Section -->
-<div class="flex flex-col sm:flex-row items-center sm:items-start gap-8 bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-900 dark:to-gray-800 rounded-2xl shadow-lg px-8 py-10 mb-10">
-  <div class="w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden shadow-lg border-4 border-white dark:border-gray-700">
-    <img src="/assets/zihao.png" alt="Zihao Avatar" class="w-full h-full object-cover">
-  </div>
-  <div class="text-center sm:text-left">
-    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-      👋 Hi, I'm Zihao Huang
-    </h1>
-    <p class="text-gray-700 dark:text-gray-300 text-lg mb-4">
-      PhD's in AI @ NTU · Explainable & Reliable AI · LLMs
-    </p>
-    <div class="flex flex-wrap justify-center sm:justify-start gap-3">
-      <a href="https://scholar.google.com.hk/citations?user=h1Zfk-MAAAAJ&hl=zh-CN" target="_blank" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">📘 Google Scholar</a>
-      <a href="https://github.com/Zihao-inorganic" target="_blank" class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition">🐙 GitHub</a>
-      <button id="snake-start-button" type="button" class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition">Start Break</button>
+  <main><section class="mb-10 border-b border-slate-200 pb-10 dark:border-slate-800">
+  <div class="grid items-center gap-8 sm:grid-cols-[150px_1fr]">
+    <div class="mx-auto h-36 w-36 overflow-hidden rounded-lg border border-slate-200 bg-slate-100 shadow-sm dark:border-slate-700 dark:bg-slate-800 sm:mx-0">
+      <img src="/assets/zihao.png" alt="Zihao Huang" class="h-full w-full object-cover">
     </div>
-    <div id="snake-break-panel" class="hidden mt-5 w-full max-w-md overflow-hidden rounded-xl border border-slate-300 bg-slate-950 text-slate-100 shadow-xl dark:border-slate-700">
-      <div class="flex items-center justify-between border-b border-slate-800 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
-        <span>Snake Break</span>
-        <div class="flex gap-4">
-          <span>Score <span id="snake-score" class="text-emerald-300">0</span></span>
-          <span>Best <span id="snake-best" class="text-amber-300">0</span></span>
+    <div>
+      <p class="mb-3 text-sm font-semibold uppercase tracking-wide text-sky-700 dark:text-sky-300">PhD Student in AI, NTU</p>
+      <h1 class="mb-4 text-4xl font-bold leading-tight text-slate-950 dark:text-white">Zihao Huang</h1>
+      <p class="max-w-2xl text-lg leading-8 text-slate-700 dark:text-slate-300">
+        I work on explainable and reliable AI, with a focus on large language models. I am also interested in world models and trustworthy machine intelligence.
+      </p>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a href="https://scholar.google.com.hk/citations?user=h1Zfk-MAAAAJ&hl=zh-CN" target="_blank" rel="noopener" class="rounded-md bg-sky-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-800">Google Scholar</a>
+        <a href="https://github.com/Zihao-inorganic" target="_blank" rel="noopener" class="rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-950 dark:hover:bg-white">GitHub</a>
+        <a href="mailto:zihao016@e.ntu.edu.sg" class="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-sky-500 hover:text-sky-700 dark:border-slate-700 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300">Email</a>
+        <button id="snake-start-button" type="button" class="rounded-md border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-semibold text-sky-800 transition hover:border-sky-300 hover:bg-sky-100 dark:border-sky-900 dark:bg-sky-950 dark:text-sky-200 dark:hover:bg-sky-900">Pixel Break</button>
+      </div>
+      <div id="snake-break-panel" class="hidden mt-5 w-full max-w-md overflow-hidden rounded-lg border border-slate-300 bg-slate-950 text-slate-100 shadow-xl dark:border-slate-700">
+        <div class="flex items-center justify-between border-b border-slate-800 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
+          <span>Snake Break</span>
+          <div class="flex gap-4">
+            <span>Score <span id="snake-score" class="text-sky-300">0</span></span>
+            <span>Best <span id="snake-best" class="text-amber-300">0</span></span>
+          </div>
+        </div>
+        <canvas id="snake-break-game" class="block h-44 w-full bg-slate-950" width="480" height="176" aria-label="Pixel snake mini game" tabindex="0"></canvas>
+        <div class="flex items-center justify-between border-t border-slate-800 px-4 py-2 text-xs text-slate-400">
+          <span id="snake-status">Ready</span>
+          <span class="h-2 w-2 rounded-full bg-sky-400"></span>
         </div>
       </div>
-      <canvas id="snake-break-game" class="block h-44 w-full bg-slate-950" width="480" height="176" aria-label="Pixel snake mini game" tabindex="0"></canvas>
-      <div class="flex items-center justify-between border-t border-slate-800 px-4 py-2 text-xs text-slate-400">
-        <span id="snake-status">Ready</span>
-        <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
-      </div>
     </div>
   </div>
-</div>
-<!-- ✅ 分隔线 -->
-<hr class="my-10 border-gray-300 dark:border-gray-700">
-<!-- ✅ 简介 -->
-<section class="text-left prose prose-lg dark:prose-invert max-w-none p-6 bg-white dark:bg-gray-900 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 mb-8">
-  <p>
-    I'm <strong>Zihao Huang</strong>, a PhD student at 
-    <a href="https://www.ntu.edu.sg/" target="_blank" class="text-blue-600 dark:text-blue-300 hover:underline">Nanyang Technological University (NTU)</a>, 
-    under the supervision of 
-    <a href="https://sentic.net/erikcambria/" target="_blank" class="text-blue-600 dark:text-blue-300 hover:underline">Prof. Erik Cambria</a> and 
-    <a href="https://maorui.wixsite.com/homepage" target="_blank" class="text-blue-600 dark:text-blue-300 hover:underline">Dr. Rui Mao</a>. 
-    My research interests include Natural Language Processing (NLP), Large Language Models (LLMs), explainable AI, and reliable AI. I am also interested in world models.
-  </p>
 </section>
-<!-- ✅ 工作经历 -->
-<section class="text-left prose prose-lg dark:prose-invert max-w-none p-6 bg-white dark:bg-gray-900 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 mb-8">
-  <h2 class="text-2xl font-bold mb-4">💼 Work Experience</h2>
-  <ul class="list-disc pl-5 space-y-2">
-    <li>
-      <strong>Visiting Researcher</strong><br>
-      <span class="text-gray-700 dark:text-gray-300">SenticNet Group, NTU Singapore, Jan 2024 – May 2025</span>
-    </li>
-    <li>
-      <strong>Research Intern</strong><br>
-      <span class="text-gray-700 dark:text-gray-300">finaXai · Internship</span><br>
-      <span class="text-gray-700 dark:text-gray-300">Aug 2025 – Nov 2025 · Singapore · On-site</span>
-    </li>
-    <li>
-      <strong>Research Assistant</strong><br>
-      <span class="text-gray-700 dark:text-gray-300">Alibaba Group · Part-time</span><br>
-      <span class="text-gray-700 dark:text-gray-300">Aug 2025 – Present · Singapore · On-site</span>
-    </li>
-  </ul>
+<section class="mb-10">
+  <div class="mb-5 flex items-end justify-between gap-4">
+    <div>
+      <p class="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Research Snapshot</p>
+      <h2 class="text-2xl font-bold text-slate-950 dark:text-white">Interests and Focus</h2>
+    </div>
+  </div>
+  <div class="grid gap-4 sm:grid-cols-2">
+    <div class="rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+      <div class="mb-4 flex flex-wrap gap-2">
+        <span class="rounded-md bg-sky-50 px-3 py-1 text-sm font-medium text-sky-800 dark:bg-sky-950 dark:text-sky-200">Explainable AI</span>
+        <span class="rounded-md bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-200">Reliable AI</span>
+        <span class="rounded-md bg-cyan-50 px-3 py-1 text-sm font-medium text-cyan-800 dark:bg-cyan-950 dark:text-cyan-200">LLMs</span>
+        <span class="rounded-md bg-indigo-50 px-3 py-1 text-sm font-medium text-indigo-800 dark:bg-indigo-950 dark:text-indigo-200">NLP</span>
+        <span class="rounded-md bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200">World Models</span>
+      </div>
+      <p class="text-sm leading-7 text-slate-600 dark:text-slate-300">
+        My current direction centers on understanding, evaluating, and improving the behavior of large language models under real-world uncertainty.
+      </p>
+    </div>
+    <div class="rounded-lg border border-slate-200 bg-slate-50 p-5 dark:border-slate-800 dark:bg-slate-950">
+      <p class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Affiliation</p>
+      <p class="text-sm leading-7 text-slate-700 dark:text-slate-300">
+        I am a PhD student at
+        <a href="https://www.ntu.edu.sg/" target="_blank" rel="noopener" class="font-medium text-sky-700 hover:underline dark:text-sky-300">Nanyang Technological University</a>,
+        supervised by
+        <a href="https://sentic.net/erikcambria/" target="_blank" rel="noopener" class="font-medium text-sky-700 hover:underline dark:text-sky-300">Prof. Erik Cambria</a>
+        and
+        <a href="https://maorui.wixsite.com/homepage" target="_blank" rel="noopener" class="font-medium text-sky-700 hover:underline dark:text-sky-300">Dr. Rui Mao</a>.
+      </p>
+    </div>
+  </div>
 </section>
-<!-- ✅ 教育经历 -->
-<section class="text-left prose prose-lg dark:prose-invert max-w-none p-6 bg-white dark:bg-gray-900 rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
-  <h2 class="text-2xl font-bold mb-4">🎓 Education</h2>
-  <ul class="list-disc pl-5 space-y-2">
-    <li>
-      <strong>Ph.D. in Computer Science</strong><br>
-      <span class="text-gray-700 dark:text-gray-300">CCDS, Nanyang Technological University (NTU), Aug 2025 – Present</span><br>
-      Supervisors: 
-      <a href="https://sentic.net/erikcambria/" target="_blank" class="text-blue-600 dark:text-blue-300 hover:underline">Prof. Erik Cambria</a>, 
-      <a href="https://maorui.wixsite.com/homepage" target="_blank" class="text-blue-600 dark:text-blue-300 hover:underline">Dr. Rui Mao</a>
-    </li>
-    <li>
-      <strong>Master of Computing (Artificial Intelligence)</strong><br>
-      <span class="text-gray-700 dark:text-gray-300">SoC, National University of Singapore (NUS), Jan 2024 – May 2025</span><br>
-      Supervisor: 
-      <a href="https://www.comp.nus.edu.sg/disa/people/huangkw/" target="_blank" class="text-blue-600 dark:text-blue-300 hover:underline">Prof. Ke-Wei Huang</a>
-    </li>
-    <li>
-      <strong>Bachelor of Computer Science</strong><br>
-      <span class="text-gray-700 dark:text-gray-300">Hunan University, Sep 2019 – Jun 2023</span><br>
-      Supervisors: 
-      <a href="http://csee.hnu.edu.cn/people/zengxiangxiang" target="_blank" class="text-blue-600 dark:text-blue-300 hover:underline">Prof. Xiangxiang Zeng</a>, 
-      <a href="http://csee.hnu.edu.cn/people/chenhaowen" target="_blank" class="text-blue-600 dark:text-blue-300 hover:underline">Prof. Haowen Chen</a>, 
-      <a href="https://yizhenlao.github.io/" target="_blank" class="text-blue-600 dark:text-blue-300 hover:underline">Prof. Yizhen Lao</a>
-    </li>
-  </ul>
+<section>
+  <p class="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Academic Timeline</p>
+  <h2 class="mb-6 text-2xl font-bold text-slate-950 dark:text-white">Education and Experience</h2>
+  <div class="space-y-5 border-l border-slate-200 pl-5 dark:border-slate-800">
+    <div class="relative">
+      <span class="absolute -left-[27px] top-1 h-3 w-3 rounded-full border-2 border-white bg-sky-500 dark:border-slate-900"></span>
+      <p class="text-sm font-semibold text-sky-700 dark:text-sky-300">Aug 2025 - Present</p>
+      <h3 class="mt-1 font-semibold text-slate-950 dark:text-white">Ph.D. in Computer Science</h3>
+      <p class="text-sm leading-6 text-slate-600 dark:text-slate-300">CCDS, Nanyang Technological University</p>
+    </div>
+    <div class="relative">
+      <span class="absolute -left-[27px] top-1 h-3 w-3 rounded-full border-2 border-white bg-slate-400 dark:border-slate-900"></span>
+      <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Aug 2025 - Present</p>
+      <h3 class="mt-1 font-semibold text-slate-950 dark:text-white">Research Assistant</h3>
+      <p class="text-sm leading-6 text-slate-600 dark:text-slate-300">Alibaba Group, Singapore</p>
+    </div>
+    <div class="relative">
+      <span class="absolute -left-[27px] top-1 h-3 w-3 rounded-full border-2 border-white bg-slate-400 dark:border-slate-900"></span>
+      <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Aug 2025 - Nov 2025</p>
+      <h3 class="mt-1 font-semibold text-slate-950 dark:text-white">Research Intern</h3>
+      <p class="text-sm leading-6 text-slate-600 dark:text-slate-300">finaXai, Singapore</p>
+    </div>
+    <div class="relative">
+      <span class="absolute -left-[27px] top-1 h-3 w-3 rounded-full border-2 border-white bg-slate-400 dark:border-slate-900"></span>
+      <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Jan 2024 - May 2025</p>
+      <h3 class="mt-1 font-semibold text-slate-950 dark:text-white">Visiting Researcher</h3>
+      <p class="text-sm leading-6 text-slate-600 dark:text-slate-300">SenticNet Group, NTU Singapore</p>
+    </div>
+    <div class="relative">
+      <span class="absolute -left-[27px] top-1 h-3 w-3 rounded-full border-2 border-white bg-slate-400 dark:border-slate-900"></span>
+      <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Jan 2024 - May 2025</p>
+      <h3 class="mt-1 font-semibold text-slate-950 dark:text-white">Master of Computing in Artificial Intelligence</h3>
+      <p class="text-sm leading-6 text-slate-600 dark:text-slate-300">School of Computing, National University of Singapore</p>
+    </div>
+    <div class="relative">
+      <span class="absolute -left-[27px] top-1 h-3 w-3 rounded-full border-2 border-white bg-slate-400 dark:border-slate-900"></span>
+      <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Sep 2019 - Jun 2023</p>
+      <h3 class="mt-1 font-semibold text-slate-950 dark:text-white">Bachelor of Computer Science</h3>
+      <p class="text-sm leading-6 text-slate-600 dark:text-slate-300">Hunan University</p>
+    </div>
+  </div>
 </section>
 <!-- ✅ Pixel Break 脚本 -->
 <script>
