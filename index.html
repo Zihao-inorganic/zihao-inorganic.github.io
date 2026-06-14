@@ -358,6 +358,24 @@
       return { x: obstacle.x, y: groundY - 76, w: obstacle.width, h: 26 };
     }
 
+    function getSenseLevel() {
+      return Math.max(0, Math.min(1, (score - 260) / 740));
+    }
+
+    function predictLiftForX(x) {
+      if (x < snakeX + 24) return liftPower;
+      const incoming = obstacles.find((obstacle) => {
+        const box = getObstacleBox(obstacle);
+        return box.x + box.w > snakeX && box.x < snakeX + 210;
+      });
+      if (!incoming) return liftPower * 0.5;
+      const box = getObstacleBox(incoming);
+      const lead = box.x - snakeX;
+      const proximity = Math.max(0, 1 - Math.abs(x - box.x) / 180);
+      if (incoming.type === "low") return Math.max(liftPower * 0.65, proximity * 0.85);
+      return lead < 96 ? Math.max(0, liftPower - proximity * 0.45) : liftPower * 0.45;
+    }
+
     function burst(x, y, color, count = 8) {
       for (let i = 0; i < count; i++) {
         particles.push({
@@ -620,6 +638,50 @@
       });
     }
 
+    function drawPredictionLayer() {
+      const sense = getSenseLevel();
+      const level = getRenderLevel();
+      if (sense <= 0.02 || level < 2) return;
+
+      const palette = getPalette();
+      ctx.save();
+      ctx.globalAlpha = 0.1 + sense * 0.18;
+      ctx.strokeStyle = palette.accent;
+      ctx.lineWidth = level >= 4 ? 2 : 1;
+      ctx.setLineDash([8, 8]);
+      ctx.beginPath();
+      for (let i = 0; i < 16; i++) {
+        const x = snakeX + 28 + i * 12;
+        const predictedLift = predictLiftForX(x);
+        const y = groundY - 22 - predictedLift * 34 + Math.sin((frame + i * 4) * 0.08) * 2;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      obstacles.forEach((obstacle) => {
+        const box = getObstacleBox(obstacle);
+        const futureX = box.x - speed * (28 + sense * 22);
+        if (futureX < snakeX || futureX > snakeX + 230) return;
+        ctx.globalAlpha = 0.08 + sense * 0.14;
+        ctx.fillStyle = obstacle.type === "low" ? palette.low : palette.high;
+        ctx.fillRect(Math.round(futureX / pixel) * pixel, box.y, box.w, box.h);
+      });
+
+      if (level >= 3) {
+        ctx.globalAlpha = 0.08 + sense * 0.12;
+        ctx.strokeStyle = palette.accent;
+        for (let r = 22; r < 78; r += 18) {
+          ctx.beginPath();
+          ctx.arc(snakeX + 22, groundY - 28 - liftPower * 28, r + Math.sin(frame * 0.04) * 3, -0.45, 0.45);
+          ctx.stroke();
+        }
+      }
+      ctx.restore();
+      clearGlow();
+    }
+
     function drawParticles() {
       particles.forEach((particle) => {
         ctx.globalAlpha = Math.max(0, Math.min(1, particle.life / 22));
@@ -631,6 +693,7 @@
     function drawWorld(level) {
       renderVisualLevel = level;
       drawBackground();
+      drawPredictionLayer();
       drawObstacles();
       drawParticles();
       drawSnake();
