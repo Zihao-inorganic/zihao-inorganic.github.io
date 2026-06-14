@@ -196,10 +196,10 @@
     const maxSpeed = 5.65;
     const visualStages = [
       { min: 0, name: "Mono", bgTop: "#050505", bgMid: "#161616", bgBottom: "#0a0a0a", body: ["#f8fafc", "#d4d4d4", "#a3a3a3", "#737373"], head: "#f5f5f5", accent: "#e5e5e5", low: "#bdbdbd", high: "#8a8a8a", glow: 0 },
-      { min: 35, name: "Color", bgTop: "#0f172a", bgMid: "#1e293b", bgBottom: "#111827", body: ["#0284c7", "#0ea5e9", "#7dd3fc", "#38bdf8"], head: "#bae6fd", accent: "#38bdf8", low: "#f97316", high: "#818cf8", glow: 0 },
-      { min: 80, name: "Luxe", bgTop: "#082f49", bgMid: "#0f172a", bgBottom: "#111827", body: ["#06b6d4", "#22d3ee", "#67e8f9", "#a7f3d0"], head: "#cffafe", accent: "#f0abfc", low: "#f59e0b", high: "#a78bfa", glow: 6 },
-      { min: 135, name: "Neon", bgTop: "#111827", bgMid: "#312e81", bgBottom: "#082f49", body: ["#22d3ee", "#38bdf8", "#c084fc", "#f0abfc"], head: "#e0f2fe", accent: "#facc15", low: "#fb7185", high: "#c084fc", glow: 10 },
-      { min: 205, name: "Royal", bgTop: "#172554", bgMid: "#581c87", bgBottom: "#0f172a", body: ["#67e8f9", "#a7f3d0", "#f0abfc", "#fde68a"], head: "#fdf4ff", accent: "#fde68a", low: "#f97316", high: "#d8b4fe", glow: 16 }
+      { min: 120, name: "Color", bgTop: "#0f172a", bgMid: "#1e293b", bgBottom: "#111827", body: ["#0284c7", "#0ea5e9", "#7dd3fc", "#38bdf8"], head: "#bae6fd", accent: "#38bdf8", low: "#f97316", high: "#818cf8", glow: 0 },
+      { min: 300, name: "Luxe", bgTop: "#082f49", bgMid: "#0f172a", bgBottom: "#111827", body: ["#06b6d4", "#22d3ee", "#67e8f9", "#a7f3d0"], head: "#cffafe", accent: "#f0abfc", low: "#f59e0b", high: "#a78bfa", glow: 6 },
+      { min: 600, name: "Neon", bgTop: "#111827", bgMid: "#312e81", bgBottom: "#082f49", body: ["#22d3ee", "#38bdf8", "#c084fc", "#f0abfc"], head: "#e0f2fe", accent: "#facc15", low: "#fb7185", high: "#c084fc", glow: 10 },
+      { min: 1000, name: "Royal", bgTop: "#172554", bgMid: "#581c87", bgBottom: "#0f172a", body: ["#67e8f9", "#a7f3d0", "#f0abfc", "#fde68a"], head: "#fdf4ff", accent: "#fde68a", low: "#f97316", high: "#d8b4fe", glow: 16 }
     ];
     const stars = Array.from({ length: 28 }, (_, i) => ({
       x: (i * 57) % W,
@@ -222,6 +222,10 @@
     let combo = 1;
     let streak = 0;
     let visualLevel = 0;
+    let renderVisualLevel = null;
+    let transitionFromLevel = 0;
+    let transitionToLevel = 0;
+    let transitionProgress = 1;
     let lastObstacleType = "high";
 
     bestNode.textContent = best;
@@ -236,6 +240,10 @@
       combo = 1;
       streak = 0;
       visualLevel = 0;
+      renderVisualLevel = null;
+      transitionFromLevel = 0;
+      transitionToLevel = 0;
+      transitionProgress = 1;
       liftPower = 0;
       lastObstacleType = "high";
       scoreNode.textContent = "0";
@@ -297,7 +305,11 @@
     }
 
     function getPalette() {
-      return visualStages[visualLevel];
+      return visualStages[getRenderLevel()];
+    }
+
+    function getRenderLevel() {
+      return renderVisualLevel === null ? visualLevel : renderVisualLevel;
     }
 
     function setGlow(color, blur) {
@@ -379,10 +391,16 @@
       speed = Math.min(maxSpeed, 2.65 + Math.floor(score / 32) * 0.24 + score * 0.0035);
       const nextVisualLevel = getVisualLevel();
       if (nextVisualLevel !== visualLevel) {
+        transitionFromLevel = visualLevel;
+        transitionToLevel = nextVisualLevel;
+        transitionProgress = 0;
         visualLevel = nextVisualLevel;
         styleNode.textContent = visualStages[visualLevel].name;
         statusNode.textContent = `${visualStages[visualLevel].name} Render`;
         burst(snakeX + 24, groundY - 54, visualStages[visualLevel].accent, 24);
+      }
+      if (transitionProgress < 1) {
+        transitionProgress = Math.min(1, transitionProgress + 0.024);
       }
       nextGap -= speed;
 
@@ -422,6 +440,7 @@
 
     function drawBackground() {
       const palette = getPalette();
+      const level = getRenderLevel();
       const sky = ctx.createLinearGradient(0, 0, 0, H);
       sky.addColorStop(0, palette.bgTop);
       sky.addColorStop(0.62, palette.bgMid);
@@ -432,22 +451,22 @@
       stars.forEach((star, i) => {
         const x = (star.x - frame * speed * star.layer + W * 3) % W;
         const glow = Math.sin(frame * 0.045 + i) > 0.25;
-        ctx.fillStyle = visualLevel === 0 ? (glow ? "#e5e5e5" : "#525252") : (glow ? "#bae6fd" : "#64748b");
-        const starSize = visualLevel >= 3 ? star.s * pixel + 1 : star.s * pixel;
-        if (visualLevel >= 4 && glow) setGlow("#f0abfc", 7);
+        ctx.fillStyle = level === 0 ? (glow ? "#e5e5e5" : "#525252") : (glow ? "#bae6fd" : "#64748b");
+        const starSize = level >= 3 ? star.s * pixel + 1 : star.s * pixel;
+        if (level >= 4 && glow) setGlow("#f0abfc", 7);
         ctx.fillRect(Math.round(x / pixel) * pixel, star.y, starSize, starSize);
         clearGlow();
       });
 
-      if (visualLevel >= 1) {
-        ctx.fillStyle = visualLevel >= 3 ? "rgba(240, 171, 252, 0.18)" : "rgba(56, 189, 248, 0.16)";
+      if (level >= 1) {
+        ctx.fillStyle = level >= 3 ? "rgba(240, 171, 252, 0.18)" : "rgba(56, 189, 248, 0.16)";
         for (let x = -((frame * speed * 0.15) % 92); x < W; x += 92) {
           ctx.fillRect(x, 78, 34, 4);
           ctx.fillRect(x + 10, 72, 18, 4);
         }
       }
 
-      if (visualLevel >= 2) {
+      if (level >= 2) {
         const moon = ctx.createRadialGradient(W - 82, 38, 4, W - 82, 38, 22);
         moon.addColorStop(0, "rgba(255,255,255,0.95)");
         moon.addColorStop(0.45, "rgba(186,230,253,0.45)");
@@ -458,7 +477,7 @@
         ctx.fill();
       }
 
-      if (visualLevel >= 3) {
+      if (level >= 3) {
         for (let x = -((frame * speed * 0.08) % 150); x < W; x += 150) {
           const buildingHeight = 22 + ((x + 300) % 5) * 8;
           ctx.fillStyle = "rgba(15, 23, 42, 0.72)";
@@ -474,15 +493,15 @@
         ctx.fillRect(x, groundY + 18, 18, 2);
       }
       for (let x = -((frame * speed * 0.75) % 44); x < W; x += 44) {
-        ctx.fillStyle = visualLevel === 0 ? "#262626" : "#164e63";
+        ctx.fillStyle = level === 0 ? "#262626" : "#164e63";
         ctx.fillRect(x, groundY + 28, 14, 4);
-        ctx.fillStyle = visualLevel === 0 ? "#525252" : "#0e7490";
+        ctx.fillStyle = level === 0 ? "#525252" : "#0e7490";
         ctx.fillRect(x + 18, groundY + 32, 8, 4);
       }
-      ctx.fillStyle = visualLevel === 0 ? "#525252" : "#1e293b";
+      ctx.fillStyle = level === 0 ? "#525252" : "#1e293b";
       ctx.fillRect(0, groundY + 2, W, 4);
-      if (visualLevel >= 3) setGlow(palette.accent, palette.glow);
-      ctx.fillStyle = visualLevel === 0 ? "#a3a3a3" : "#334155";
+      if (level >= 3) setGlow(palette.accent, palette.glow);
+      ctx.fillStyle = level === 0 ? "#a3a3a3" : "#334155";
       ctx.fillRect(0, groundY + 8, W, 2);
       clearGlow();
     }
@@ -504,6 +523,7 @@
     function drawSnake() {
       const snake = getSnakeBoxes();
       const palette = getPalette();
+      const level = getRenderLevel();
       const blink = Math.floor(frame / 18) % 8 !== 0;
       const wiggle = Math.floor(frame / 8) % 2;
       const smile = combo >= 3;
@@ -522,10 +542,10 @@
       });
 
       liftedSegments.forEach((segment, index) => {
-        if (visualLevel >= 3) setGlow(segment.color, palette.glow);
+        if (level >= 3) setGlow(segment.color, palette.glow);
         drawPixelRect(segment.x, segment.drawY, segment.w, segment.h, segment.color);
         clearGlow();
-        if (visualLevel >= 2) drawPixelRect(segment.x + 3, segment.drawY + 2, Math.max(4, segment.w - 8), 3, "rgba(255,255,255,0.38)");
+        if (level >= 2) drawPixelRect(segment.x + 3, segment.drawY + 2, Math.max(4, segment.w - 8), 3, "rgba(255,255,255,0.38)");
         if (index > 0) {
           const prev = liftedSegments[index - 1];
           const bridgeY = Math.min(segment.drawY, prev.drawY) + 7;
@@ -548,28 +568,28 @@
         drawPixelRect(x, y, 9, 7, i % 2 ? palette.body[1] : palette.accent);
       }
 
-      if (visualLevel >= 4) setGlow(palette.accent, palette.glow + 4);
+      if (level >= 4) setGlow(palette.accent, palette.glow + 4);
       drawPixelRect(snake.head.x, snake.head.y, snake.head.w, snake.head.h, palette.head);
       clearGlow();
       drawPixelRect(snake.head.x + 2, snake.head.y - 4, 10, 4, palette.accent);
-      if (visualLevel >= 4) {
+      if (level >= 4) {
         ctx.fillStyle = "rgba(255,255,255,0.32)";
         ctx.beginPath();
         ctx.ellipse(snake.head.x + 8, snake.head.y + 8, 13, 10, -0.2, 0, Math.PI * 2);
         ctx.fill();
       }
       drawPixelRect(snake.head.x + 12, snake.head.y + 4, 3, 3, blink ? "#0f172a" : palette.head);
-      drawPixelRect(snake.head.x + 3, snake.head.y + 10, 4, 3, visualLevel === 0 ? "#d4d4d4" : "#f9a8d4");
-      drawPixelRect(snake.head.x + 15, snake.head.y + (smile ? 12 : 10), 6, 3, visualLevel === 0 ? "#a3a3a3" : "#fb7185");
+      drawPixelRect(snake.head.x + 3, snake.head.y + 10, 4, 3, level === 0 ? "#d4d4d4" : "#f9a8d4");
+      drawPixelRect(snake.head.x + 15, snake.head.y + (smile ? 12 : 10), 6, 3, level === 0 ? "#a3a3a3" : "#fb7185");
       drawPixelRect(snake.head.x + 1, snake.head.y - 7, 3, 5, palette.accent);
       drawPixelRect(snake.head.x + 10, snake.head.y - 7, 3, 5, palette.accent);
 
-      if (combo >= 4 || visualLevel >= 3) {
+      if (combo >= 4 || level >= 3) {
         drawPixelRect(snake.head.x + 4, snake.head.y - 12, 3, 3, palette.accent);
         drawPixelRect(snake.head.x + 10, snake.head.y - 12, 3, 3, palette.accent);
       }
 
-      if (visualLevel >= 4) {
+      if (level >= 4) {
         drawPixelRect(snake.head.x + 5, snake.head.y - 17, 3, 5, "#fef3c7");
         drawPixelRect(snake.head.x + 9, snake.head.y - 18, 4, 6, "#fde68a");
         drawPixelRect(snake.head.x + 14, snake.head.y - 17, 3, 5, "#fef3c7");
@@ -578,23 +598,24 @@
 
     function drawObstacles() {
       const palette = getPalette();
+      const level = getRenderLevel();
       obstacles.forEach((obstacle) => {
         const box = getObstacleBox(obstacle);
         if (obstacle.type === "low") {
-          if (visualLevel >= 3) setGlow(palette.low, palette.glow);
+          if (level >= 3) setGlow(palette.low, palette.glow);
           drawPixelRect(box.x, box.y + 8, box.w, box.h - 8, palette.low);
-          drawPixelRect(box.x + 4, box.y, Math.max(8, box.w - 8), 8, visualLevel === 0 ? "#f5f5f5" : "#fb923c");
+          drawPixelRect(box.x + 4, box.y, Math.max(8, box.w - 8), 8, level === 0 ? "#f5f5f5" : "#fb923c");
           clearGlow();
-          drawPixelRect(box.x + 8, box.y + 10, 5, 5, visualLevel === 0 ? "#737373" : "#fed7aa");
-          drawPixelRect(box.x + box.w - 14, box.y + 10, 5, 5, visualLevel === 0 ? "#262626" : "#7c2d12");
+          drawPixelRect(box.x + 8, box.y + 10, 5, 5, level === 0 ? "#737373" : "#fed7aa");
+          drawPixelRect(box.x + box.w - 14, box.y + 10, 5, 5, level === 0 ? "#262626" : "#7c2d12");
         } else {
           const wave = Math.sin(frame * 0.08 + obstacle.wave) * 2;
-          if (visualLevel >= 3) setGlow(palette.high, palette.glow);
+          if (level >= 3) setGlow(palette.high, palette.glow);
           drawPixelRect(box.x, box.y + wave, box.w, box.h, palette.high);
-          drawPixelRect(box.x + 4, box.y - 8 + wave, Math.max(8, box.w - 8), 8, visualLevel === 0 ? "#d4d4d4" : "#a5b4fc");
+          drawPixelRect(box.x + 4, box.y - 8 + wave, Math.max(8, box.w - 8), 8, level === 0 ? "#d4d4d4" : "#a5b4fc");
           clearGlow();
-          drawPixelRect(box.x + box.w - 10, box.y + 6 + wave, 5, 5, visualLevel === 0 ? "#262626" : "#312e81");
-          drawPixelRect(box.x + 6, box.y + box.h - 8 + wave, 5, 5, visualLevel === 0 ? "#f5f5f5" : "#c7d2fe");
+          drawPixelRect(box.x + box.w - 10, box.y + 6 + wave, 5, 5, level === 0 ? "#262626" : "#312e81");
+          drawPixelRect(box.x + 6, box.y + box.h - 8 + wave, 5, 5, level === 0 ? "#f5f5f5" : "#c7d2fe");
         }
       });
     }
@@ -607,11 +628,44 @@
       ctx.globalAlpha = 1;
     }
 
-    function drawScene(crashed = false) {
+    function drawWorld(level) {
+      renderVisualLevel = level;
       drawBackground();
       drawObstacles();
       drawParticles();
       drawSnake();
+      renderVisualLevel = null;
+    }
+
+    function drawUpgradeScan(split) {
+      const palette = visualStages[transitionToLevel];
+      const scanX = Math.round(split / pixel) * pixel;
+      ctx.fillStyle = "rgba(255,255,255,0.18)";
+      for (let y = 0; y < H; y += 12) {
+        ctx.fillRect(scanX - 8, y, 4, 4);
+        ctx.fillRect(scanX + 4, y + 6, 4, 4);
+      }
+      setGlow(palette.accent, 14);
+      ctx.fillStyle = palette.accent;
+      ctx.fillRect(scanX, 0, 3, H);
+      clearGlow();
+    }
+
+    function drawScene(crashed = false) {
+      if (transitionProgress < 1 && gameState === "running" && !crashed) {
+        const steppedProgress = Math.floor(transitionProgress * 32) / 32;
+        const split = Math.min(W, steppedProgress * (W + 24));
+        drawWorld(transitionFromLevel);
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(0, 0, split, H);
+        ctx.clip();
+        drawWorld(transitionToLevel);
+        ctx.restore();
+        drawUpgradeScan(split);
+      } else {
+        drawWorld(visualLevel);
+      }
 
       if (gameState !== "running" || crashed) {
         ctx.fillStyle = "rgba(2, 6, 23, 0.72)";
