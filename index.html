@@ -67,25 +67,21 @@
     <div class="flex flex-wrap justify-center sm:justify-start gap-3">
       <a href="https://scholar.google.com.hk/citations?user=h1Zfk-MAAAAJ&hl=zh-CN" target="_blank" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">📘 Google Scholar</a>
       <a href="https://github.com/Zihao-inorganic" target="_blank" class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition">🐙 GitHub</a>
-      <button onclick="triggerStressRelief()" class="px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition">💰 Stress Relief</button>
+      <button id="snake-start-button" type="button" class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition">Pixel Break</button>
     </div>
-    <div class="mt-3 space-y-3 text-sm font-medium">
-      <div>
-        <p class="text-yellow-600 dark:text-yellow-400 mb-1">💰 You've earned: $<span id="money-count">0</span> / 20</p>
-        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-          <div id="money-bar" class="h-2 rounded-full bg-yellow-400" style="width: 0%"></div>
-        </div>
-        <p id="reward-display" class="mt-1 text-yellow-600 dark:text-yellow-400 italic"></p>
-      </div>
-      <div>
-        <p class="text-pink-500 dark:text-pink-400 mb-1">🎉 Good moods: <span id="mood-count">0</span> / 10</p>
-        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-          <div id="mood-bar" class="h-2 rounded-full bg-pink-400" style="width: 0%"></div>
+    <div id="snake-break-panel" class="hidden mt-5 w-full max-w-md overflow-hidden rounded-xl border border-slate-300 bg-slate-950 text-slate-100 shadow-xl dark:border-slate-700">
+      <div class="flex items-center justify-between border-b border-slate-800 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
+        <span>Snake Break</span>
+        <div class="flex gap-4">
+          <span>Score <span id="snake-score" class="text-emerald-300">0</span></span>
+          <span>Best <span id="snake-best" class="text-amber-300">0</span></span>
         </div>
       </div>
-    </div>
-    <div id="easter-egg" class="hidden mt-4 p-4 bg-gradient-to-r from-green-300 via-blue-200 to-purple-300 dark:from-green-900 dark:to-purple-900 rounded-xl shadow-lg text-center text-sm text-gray-800 dark:text-gray-100">
-      🌟 You're awesome! Keep going!
+      <canvas id="snake-break-game" class="block h-44 w-full bg-slate-950" width="480" height="176" aria-label="Pixel snake mini game" tabindex="0"></canvas>
+      <div class="flex items-center justify-between border-t border-slate-800 px-4 py-2 text-xs text-slate-400">
+        <span id="snake-status">Ready</span>
+        <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+      </div>
     </div>
   </div>
 </div>
@@ -110,16 +106,16 @@
       <strong>Visiting Researcher</strong><br>
       <span class="text-gray-700 dark:text-gray-300">SenticNet Group, NTU Singapore, Jan 2024 – May 2025</span>
     </li>
-<p><li>
-<strong>Research Intern</strong><br>
-<span class="text-gray-700 dark:text-gray-300">finaXai · Internship</span><br>
-<span class="text-gray-700 dark:text-gray-300">Aug 2025 – Nov 2025 · Singapore · On-site</span>
-</li></p>
-<p><li>
-<strong>Research Assistant</strong><br>
-<span class="text-gray-700 dark:text-gray-300">Alibaba Group · Part-time</span><br>
-<span class="text-gray-700 dark:text-gray-300">Aug 2025 – Present · Singapore · On-site</span>
-</li></p>
+    <li>
+      <strong>Research Intern</strong><br>
+      <span class="text-gray-700 dark:text-gray-300">finaXai · Internship</span><br>
+      <span class="text-gray-700 dark:text-gray-300">Aug 2025 – Nov 2025 · Singapore · On-site</span>
+    </li>
+    <li>
+      <strong>Research Assistant</strong><br>
+      <span class="text-gray-700 dark:text-gray-300">Alibaba Group · Part-time</span><br>
+      <span class="text-gray-700 dark:text-gray-300">Aug 2025 – Present · Singapore · On-site</span>
+    </li>
   </ul>
 </section>
 <!-- ✅ 教育经历 -->
@@ -149,58 +145,216 @@
     </li>
   </ul>
 </section>
-<!-- ✅ Stress Relief 脚本 -->
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<!-- ✅ Pixel Break 脚本 -->
 <script>
-  let money = 0;
-  let mood = 0;
-  let triggered = false;
+  (() => {
+    const panel = document.getElementById("snake-break-panel");
+    const button = document.getElementById("snake-start-button");
+    const canvas = document.getElementById("snake-break-game");
+    const scoreNode = document.getElementById("snake-score");
+    const bestNode = document.getElementById("snake-best");
+    const statusNode = document.getElementById("snake-status");
+    const ctx = canvas.getContext("2d");
 
-  function triggerStressRelief() {
-    const isGold = Math.random() > 0.5;
+    const W = canvas.width;
+    const H = canvas.height;
+    const groundY = 132;
+    const snakeX = 82;
+    const pixel = 4;
+    let animationId = null;
+    let running = false;
+    let started = false;
+    let lifting = false;
+    let score = 0;
+    let best = Number(localStorage.getItem("snakeBreakBest") || 0);
+    let speed = 2.8;
+    let frame = 0;
+    let nextGap = 86;
+    let obstacles = [];
 
-    for (let i = 0; i < 4; i++) {
-      setTimeout(() => {
-        confetti({
-          particleCount: 60,
-          spread: 90,
-          startVelocity: 45,
-          colors: isGold ? ['#FFD700', '#FFC107', '#FFEB3B'] : ['#00BFFF', '#FF69B4', '#FFB6C1'],
-          shapes: ['circle'],
-          origin: { x: Math.random(), y: Math.random() - 0.2 }
-        });
-      }, i * 250);
+    bestNode.textContent = best;
+
+    function resetGame() {
+      score = 0;
+      speed = 2.8;
+      frame = 0;
+      nextGap = 76;
+      obstacles = [];
+      scoreNode.textContent = "0";
+      statusNode.textContent = "Running";
+      running = true;
+      started = true;
+      cancelAnimationFrame(animationId);
+      animationId = requestAnimationFrame(loop);
     }
 
-    if (isGold) {
-      money++;
-      document.getElementById("money-count").innerText = money;
-      document.getElementById("money-bar").style.width = Math.min((money / 20) * 100, 100) + "%";
-      updateReward(money);
-    } else {
-      mood++;
-      document.getElementById("mood-count").innerText = mood;
-      document.getElementById("mood-bar").style.width = Math.min((mood / 10) * 100, 100) + "%";
-      if (!triggered && mood >= 10) {
-        triggered = true;
-        showBlessingBanner();
+    function startGame() {
+      panel.classList.remove("hidden");
+      canvas.focus();
+      if (!running) resetGame();
+    }
+
+    function endGame() {
+      running = false;
+      statusNode.textContent = "Crashed";
+      best = Math.max(best, Math.floor(score));
+      localStorage.setItem("snakeBreakBest", best);
+      bestNode.textContent = best;
+      drawScene(true);
+    }
+
+    function queueObstacle() {
+      const high = Math.random() > 0.55;
+      obstacles.push({
+        x: W + 18,
+        type: high ? "high" : "low",
+        width: high ? 24 : 18,
+        passed: false
+      });
+      nextGap = 82 + Math.random() * 74;
+    }
+
+    function getSnakeBoxes() {
+      const headTop = lifting ? groundY - 62 : groundY - 34;
+      return {
+        body: { x: snakeX - 36, y: groundY - 18, w: 56, h: 16 },
+        head: { x: snakeX + 16, y: headTop, w: 22, h: 22 },
+        neck: { x: snakeX + 8, y: headTop + 18, w: 10, h: groundY - headTop - 20 }
+      };
+    }
+
+    function getObstacleBox(obstacle) {
+      if (obstacle.type === "low") {
+        return { x: obstacle.x, y: groundY - 40, w: obstacle.width, h: 20 };
+      }
+      return { x: obstacle.x, y: groundY - 66, w: obstacle.width, h: 24 };
+    }
+
+    function intersects(a, b) {
+      return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+    }
+
+    function hasCollision() {
+      const snake = getSnakeBoxes();
+      return obstacles.some((obstacle) => {
+        const box = getObstacleBox(obstacle);
+        return intersects(snake.head, box) || intersects(snake.neck, box);
+      });
+    }
+
+    function update() {
+      frame++;
+      score += 0.08;
+      speed = Math.min(6.2, speed + 0.0009);
+      nextGap -= speed;
+
+      if (nextGap <= 0) queueObstacle();
+
+      obstacles.forEach((obstacle) => {
+        obstacle.x -= speed;
+        if (!obstacle.passed && obstacle.x + obstacle.width < snakeX - 36) {
+          obstacle.passed = true;
+          score += 4;
+        }
+      });
+
+      obstacles = obstacles.filter((obstacle) => obstacle.x > -40);
+      scoreNode.textContent = Math.floor(score);
+
+      if (hasCollision()) endGame();
+    }
+
+    function drawPixelRect(x, y, w, h, color) {
+      ctx.fillStyle = color;
+      ctx.fillRect(Math.round(x / pixel) * pixel, Math.round(y / pixel) * pixel, w, h);
+    }
+
+    function drawBackground() {
+      ctx.fillStyle = "#020617";
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = "#0f172a";
+      for (let x = -((frame * speed * 0.35) % 32); x < W; x += 32) {
+        ctx.fillRect(x, groundY + 18, 18, 2);
+      }
+      ctx.fillStyle = "#1e293b";
+      ctx.fillRect(0, groundY + 2, W, 4);
+      ctx.fillStyle = "#334155";
+      ctx.fillRect(0, groundY + 8, W, 2);
+      ctx.fillStyle = "#38bdf8";
+      ctx.fillRect(58, 34, 4, 4);
+      ctx.fillRect(306, 42, 4, 4);
+      ctx.fillRect(402, 26, 4, 4);
+    }
+
+    function drawSnake() {
+      const snake = getSnakeBoxes();
+      const blink = Math.floor(frame / 10) % 2 === 0;
+
+      drawPixelRect(snake.body.x, snake.body.y, snake.body.w, snake.body.h, "#34d399");
+      drawPixelRect(snake.body.x - 8, snake.body.y + 4, 14, 10, "#10b981");
+      drawPixelRect(snake.neck.x, snake.neck.y, snake.neck.w, snake.neck.h, "#34d399");
+      drawPixelRect(snake.head.x, snake.head.y, snake.head.w, snake.head.h, "#6ee7b7");
+      drawPixelRect(snake.head.x + 16, snake.head.y + 6, 4, 4, blink ? "#0f172a" : "#6ee7b7");
+      drawPixelRect(snake.head.x + 21, snake.head.y + 13, 8, 4, "#f43f5e");
+      drawPixelRect(snake.body.x + 8, snake.body.y + 14, 8, 6, "#059669");
+      drawPixelRect(snake.body.x + 38, snake.body.y + 14, 8, 6, "#059669");
+    }
+
+    function drawObstacles() {
+      obstacles.forEach((obstacle) => {
+        const box = getObstacleBox(obstacle);
+        const color = obstacle.type === "low" ? "#f97316" : "#818cf8";
+        drawPixelRect(box.x, box.y, box.w, box.h, color);
+        drawPixelRect(box.x + 4, box.y - 6, box.w - 8, 6, color);
+        drawPixelRect(box.x + box.w - 6, box.y + 4, 4, 6, "#0f172a");
+      });
+    }
+
+    function drawScene(crashed = false) {
+      drawBackground();
+      drawObstacles();
+      drawSnake();
+
+      if (!started || crashed) {
+        ctx.fillStyle = "rgba(2, 6, 23, 0.72)";
+        ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = "#e2e8f0";
+        ctx.font = "bold 16px monospace";
+        ctx.textAlign = "center";
+        ctx.fillText(crashed ? "TRY AGAIN" : "PIXEL BREAK", W / 2, H / 2 - 4);
       }
     }
-  }
 
-  function updateReward(money) {
-    const display = document.getElementById("reward-display");
-    if (money >= 20) display.innerText = "🏆 Virtual Trophy unlocked!";
-    else if (money >= 10) display.innerText = "🎁 You've earned a digital cupcake!";
-    else if (money >= 5) display.innerText = "🍬 Candy bonus!";
-    else display.innerText = "";
-  }
+    function loop() {
+      if (!running) return;
+      update();
+      drawScene();
+      if (running) animationId = requestAnimationFrame(loop);
+    }
 
-  function showBlessingBanner() {
-    const egg = document.getElementById("easter-egg");
-    egg.classList.remove("hidden");
-    egg.innerText = "🎉 You’ve spread so many good vibes! Stay joyful and inspired! 🌈";
-  }
+    function setLift(value) {
+      lifting = value;
+      if (!running && panel.classList.contains("hidden") === false) resetGame();
+    }
+
+    button.addEventListener("click", startGame);
+    canvas.addEventListener("pointerdown", () => setLift(true));
+    canvas.addEventListener("pointerup", () => setLift(false));
+    canvas.addEventListener("pointerleave", () => setLift(false));
+
+    window.addEventListener("keydown", (event) => {
+      if (event.code !== "Space") return;
+      event.preventDefault();
+      if (panel.classList.contains("hidden")) startGame();
+      setLift(true);
+    });
+
+    window.addEventListener("keyup", (event) => {
+      if (event.code === "Space") setLift(false);
+    });
+
+    drawScene();
+  })();
 </script>
 </main>
   <footer class="text-center mt-8 text-sm text-gray-600 dark:text-gray-400">
