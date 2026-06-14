@@ -171,6 +171,7 @@
     let frame = 0;
     let nextGap = 86;
     let obstacles = [];
+    let lastObstacleType = "high";
 
     bestNode.textContent = best;
 
@@ -180,6 +181,7 @@
       frame = 0;
       nextGap = 70;
       obstacles = [];
+      lastObstacleType = "high";
       scoreNode.textContent = "0";
       statusNode.textContent = "Running";
       button.textContent = "Stop Break";
@@ -222,15 +224,21 @@
     }
 
     function queueObstacle() {
-      const high = Math.random() > 0.55;
-      const width = high ? 26 + Math.random() * 36 : 42 + Math.random() * 56;
+      const difficulty = Math.min(score / 150, 1);
+      const shouldSwitch = Math.random() < 0.48 + difficulty * 0.34;
+      const type = shouldSwitch ? (lastObstacleType === "high" ? "low" : "high") : lastObstacleType;
+      const width = type === "high"
+        ? 24 + Math.random() * (30 + difficulty * 14)
+        : 42 + Math.random() * (34 + difficulty * 24);
+
       obstacles.push({
         x: W + 18,
-        type: high ? "high" : "low",
+        type,
         width,
         passed: false
       });
-      nextGap = width + 108 + Math.random() * 78;
+      lastObstacleType = type;
+      nextGap = width + 132 - difficulty * 42 + Math.random() * (72 - difficulty * 24);
     }
 
     function getSnakeBoxes() {
@@ -264,7 +272,7 @@
     function update() {
       frame++;
       score += 0.08;
-      speed = Math.min(5.9, speed + 0.0008);
+      speed = Math.min(6.6, 2.65 + Math.floor(score / 25) * 0.34 + score * 0.006);
       nextGap -= speed;
 
       if (nextGap <= 0) queueObstacle();
@@ -305,16 +313,46 @@
       ctx.fillRect(402, 26, 4, 4);
     }
 
+    function getBodyLiftAt(x) {
+      const lowObstacle = obstacles.find((obstacle) => {
+        if (obstacle.type !== "low") return false;
+        return x > obstacle.x - 12 && x < obstacle.x + obstacle.width + 16;
+      });
+
+      if (!lowObstacle) return 0;
+
+      const lead = x - lowObstacle.x;
+      const tail = lowObstacle.x + lowObstacle.width - x;
+      const edgeEase = Math.min(1, Math.max(0, Math.min(lead + 12, tail + 16) / 22));
+      return 28 * edgeEase;
+    }
+
     function drawSnake() {
       const snake = getSnakeBoxes();
       const blink = Math.floor(frame / 10) % 2 === 0;
       const wiggle = Math.floor(frame / 8) % 2;
+      const bodySegments = [
+        { x: snake.body.x, y: snake.body.y + 2, w: 16, h: 10, color: "#10b981" },
+        { x: snake.body.x + 14, y: snake.body.y, w: 18, h: 14, color: "#34d399" },
+        { x: snake.body.x + 30, y: snake.body.y + 2, w: 18, h: 12, color: "#6ee7b7" },
+        { x: snake.body.x + 46, y: snake.body.y, w: 20, h: 14, color: "#34d399" }
+      ];
 
-      drawPixelRect(snake.body.x, snake.body.y + 2, 16, 10, "#10b981");
-      drawPixelRect(snake.body.x + 14, snake.body.y, 18, 14, "#34d399");
-      drawPixelRect(snake.body.x + 30, snake.body.y + 2, 18, 12, "#6ee7b7");
-      drawPixelRect(snake.body.x + 46, snake.body.y, 20, 14, "#34d399");
-      drawPixelRect(snake.body.x - 10, snake.body.y + 5 + wiggle * 2, 12, 6, "#059669");
+      bodySegments.forEach((segment, index) => {
+        const centerX = segment.x + segment.w / 2;
+        const lift = getBodyLiftAt(centerX);
+        const bounce = lift > 0 ? Math.sin((centerX + frame * 2) * 0.08) * 2 : 0;
+        drawPixelRect(segment.x, segment.y - lift + bounce, segment.w, segment.h, segment.color);
+        if (index > 0) {
+          const prev = bodySegments[index - 1];
+          const prevLift = getBodyLiftAt(prev.x + prev.w / 2);
+          const bridgeY = Math.min(segment.y - lift, prev.y - prevLift) + 7;
+          drawPixelRect(prev.x + prev.w - 2, bridgeY, segment.x - prev.x - prev.w + 4, 6, "#34d399");
+        }
+      });
+
+      const tailLift = getBodyLiftAt(snake.body.x - 4);
+      drawPixelRect(snake.body.x - 10, snake.body.y + 5 + wiggle * 2 - tailLift, 12, 6, "#059669");
       drawPixelRect(snake.neck.x, snake.neck.y, snake.neck.w, snake.neck.h, "#34d399");
       drawPixelRect(snake.neck.x - 4, snake.neck.y + 10, 8, Math.max(4, snake.neck.h - 10), "#10b981");
       drawPixelRect(snake.head.x, snake.head.y, snake.head.w, snake.head.h, "#a7f3d0");
@@ -322,8 +360,8 @@
       drawPixelRect(snake.head.x + 12, snake.head.y + 4, 3, 3, blink ? "#0f172a" : "#a7f3d0");
       drawPixelRect(snake.head.x + 3, snake.head.y + 10, 4, 3, "#f9a8d4");
       drawPixelRect(snake.head.x + 15, snake.head.y + 10, 6, 3, "#fb7185");
-      drawPixelRect(snake.body.x + 14, snake.body.y + 13, 8, 5, "#047857");
-      drawPixelRect(snake.body.x + 48, snake.body.y + 13, 8, 5, "#047857");
+      drawPixelRect(snake.body.x + 14, snake.body.y + 13 - getBodyLiftAt(snake.body.x + 18), 8, 5, "#047857");
+      drawPixelRect(snake.body.x + 48, snake.body.y + 13 - getBodyLiftAt(snake.body.x + 52), 8, 5, "#047857");
     }
 
     function drawObstacles() {
