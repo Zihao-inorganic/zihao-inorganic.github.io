@@ -77,13 +77,13 @@
         </div>
       </div>
       <div id="snake-break-panel" class="hidden mt-5 w-full max-w-md overflow-hidden rounded-lg border border-slate-300 bg-slate-950 text-slate-100 shadow-xl dark:border-slate-700">
-        <div class="flex items-center justify-between border-b border-slate-800 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
-          <span>Snake Break</span>
-          <div class="flex flex-wrap gap-x-4 gap-y-1">
-            <span>Score <span id="snake-score" class="text-sky-300">0</span></span>
-            <span>Best <span id="snake-best" class="text-amber-300">0</span></span>
-            <span>Flow <span id="snake-flow" class="text-emerald-300">1x</span></span>
-            <span>Style <span id="snake-style" class="text-fuchsia-300">Mono</span></span>
+        <div class="grid min-h-10 grid-cols-[auto_1fr] items-center gap-3 border-b border-slate-800 px-4 py-2 text-[11px] font-semibold uppercase tracking-wide text-slate-400 sm:text-xs">
+          <span class="whitespace-nowrap">Snake Break</span>
+          <div class="flex min-w-0 justify-end gap-3 whitespace-nowrap tabular-nums">
+            <span>Score <span id="snake-score" class="inline-block w-8 text-right text-sky-300">0</span></span>
+            <span>Best <span id="snake-best" class="inline-block w-8 text-right text-amber-300">0</span></span>
+            <span>Flow <span id="snake-flow" class="inline-block w-6 text-right text-emerald-300">1x</span></span>
+            <span>Style <span id="snake-style" class="inline-block w-12 text-left text-fuchsia-300">Mono</span></span>
           </div>
         </div>
         <canvas id="snake-break-game" class="block h-44 w-full bg-slate-950" width="480" height="176" aria-label="Pixel snake mini game" tabindex="0"></canvas>
